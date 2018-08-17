@@ -1,6 +1,6 @@
 package com.njp.wallhaven.ui.splash
 
-import com.njp.wallhaven.bean.SimpleImageInfo
+import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 
 interface SplashContract {
 

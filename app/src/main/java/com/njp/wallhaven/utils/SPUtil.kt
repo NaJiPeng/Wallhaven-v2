@@ -7,38 +7,30 @@ import android.content.SharedPreferences
 /**
  * SharedPreferences工具类
  */
-class SPUtil private constructor(fileName: String) {
+class SPUtil private constructor() {
 
     companion object {
 
         private lateinit var context: Application
 
-        private var settingSP: SPUtil? = null
-        private var dataSP: SPUtil? = null
+        private var instance: SPUtil? = null
 
         fun init(context: Application) {
             this.context = context
         }
 
-        fun getSettingSP(): SPUtil {
-            if (settingSP == null) {
-                settingSP = SPUtil("setting_pref")
+        fun getInstance(): SPUtil {
+            if (instance == null) {
+                instance = SPUtil()
             }
-            return settingSP!!
-        }
-
-        fun getDataSP(): SPUtil {
-            if (dataSP == null) {
-                dataSP = SPUtil("data_pref")
-            }
-            return dataSP!!
+            return instance!!
         }
     }
 
     private val sp: SharedPreferences
 
     init {
-        sp = context.getSharedPreferences(fileName, Context.MODE_PRIVATE)
+        sp = context.getSharedPreferences("shared_pref", Context.MODE_PRIVATE)
     }
 
     fun putInt(key: String, values: Int) {

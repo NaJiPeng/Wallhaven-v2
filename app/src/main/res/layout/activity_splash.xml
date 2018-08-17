@@ -1,52 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context="com.njp.wallhaven.ui.splash.SplashActivity">
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/ivBackground"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="centerCrop" />
 
-            <ImageView
-                android:id="@+id/iv_background"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:scaleType="centerCrop" />
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:scaleType="fitXY" />
 
-            <ImageView
-                android:id="@+id/iv_logo"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:scaleType="fitXY" />
-
-        </LinearLayout>
+    </LinearLayout>
 
 
-        <Button
-            android:id="@+id/btn_skip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginTop="32dp"
-            android:layout_marginRight="32dp"
-            android:background="@drawable/btn_skip"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:paddingLeft="20dp"
-            android:paddingTop="7dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="7dp"
-            android:text="跳过"
-            android:textColor="#fff"
-            android:textSize="14dp" />
+    <Button
+        android:id="@+id/btnSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/btn_skip"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:paddingBottom="7dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="7dp"
+        android:text="跳过 3"
+        android:textColor="#fff"
+        android:textSize="14dp" />
 
-
-    </FrameLayout>
-</layout>
+</FrameLayout>

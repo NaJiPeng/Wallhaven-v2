@@ -1,9 +1,9 @@
 package com.njp.wallhaven.repositories
 
-import com.njp.wallhaven.bean.SplashImages
-import com.njp.wallhaven.repositories.local.LocalDao
+import com.njp.wallhaven.repositories.bean.SplashImages
 import com.njp.wallhaven.repositories.network.NetworkInstance
 import com.njp.wallhaven.repositories.network.NetworkInstance.retrofit
+import com.raizlabs.android.dbflow.sql.language.SQLite
 
 /**
  * 应用数据来源唯一接口
@@ -24,14 +24,22 @@ class Repository private constructor() {
     }
 
     private val service = retrofit.create(NetworkInstance.RetrofitService::class.java)
-    private val dao = LocalDao()
 
-    fun getSplashImagesFromInternet() = service.getSplashImages()
+    fun getImages(path: String, page: Int) = service.getImages(path, page)
 
-    fun getSplashImagesFromLocal(): SplashImages? = dao.getSplashImages()
+    fun getSplashImagesFromDB(): SplashImages? {
+        val list = SQLite.select()
+                .from(SplashImages::class.java)
+                .queryList()
+        return if (list.isNotEmpty()) list[0] else null
+    }
 
-    fun updateSplashimageToLocal(splashImages: SplashImages) {
-        dao.saveSplashImages(splashImages)
+    fun updateSplashImageToDB(splashImages: SplashImages) {
+        SQLite.select()
+                .from(SplashImages::class.java)
+                .queryList()
+                .forEach { it.delete() }
+        splashImages.save()
     }
 
 }

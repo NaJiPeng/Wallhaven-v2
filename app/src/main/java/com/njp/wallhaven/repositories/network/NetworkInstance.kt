@@ -7,6 +7,8 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 object NetworkInstance {
 
@@ -26,8 +28,11 @@ object NetworkInstance {
      */
     interface RetrofitService {
 
-        @GET(" ")
-        fun getSplashImages(): Observable<ResponseBody>
+        @GET("{path}")
+        fun getImages(
+                @Path("path") path: String,
+                @Query("page") page: Int
+        ): Observable<ResponseBody>
 
     }
 

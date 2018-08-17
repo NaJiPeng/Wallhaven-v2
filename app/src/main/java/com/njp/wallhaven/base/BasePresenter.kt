@@ -9,7 +9,7 @@ open class BasePresenter<V>(protected var view: V?) : LifecycleObserver {
 
     private val disposables = ArrayList<Disposable>()
 
-    fun addDisposable(disposable: Disposable){
+    fun addDisposable(disposable: Disposable) {
         disposables.add(disposable)
     }
 

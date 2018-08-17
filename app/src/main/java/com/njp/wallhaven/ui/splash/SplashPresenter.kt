@@ -2,8 +2,8 @@ package com.njp.wallhaven.ui.splash
 
 import android.annotation.SuppressLint
 import com.njp.wallhaven.base.BasePresenter
-import com.njp.wallhaven.bean.SimpleImageInfo
-import com.njp.wallhaven.bean.SplashImages
+import com.njp.wallhaven.repositories.bean.SimpleImageInfo
+import com.njp.wallhaven.repositories.bean.SplashImages
 import com.njp.wallhaven.repositories.Repository
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.View>(view), SplashContract.Presenter {
 
     override fun getSplashImage() {
-        val images = Repository.getInstance().getSplashImagesFromLocal()?.images
+        val images = Repository.getInstance().getSplashImagesFromDB()?.images
         view?.onSplashImage(images?.get(Random().nextInt(images.size)))
     }
 
@@ -24,10 +24,10 @@ class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.
     @SuppressLint("CheckResult")
     override fun updateSplashImages() {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
-        val date = Repository.getInstance().getSplashImagesFromLocal()?.date
+        val date = Repository.getInstance().getSplashImagesFromDB()?.date
         val now = sdf.format(Date())
         if (date != now) {
-            Repository.getInstance().getSplashImagesFromInternet()
+            Repository.getInstance().getImages("", 0)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
@@ -36,9 +36,17 @@ class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.
                         val images = elements.map {
                             val href = it.attr("href")
                             val url = "http:" + it.child(0).attr("src")
-                            SimpleImageInfo(url, href)
+                            SimpleImageInfo().apply {
+                                this.href = href
+                                this.url = url
+                            }
                         }
-                        Repository.getInstance().updateSplashimageToLocal(SplashImages(now, images))
+                        Repository.getInstance().updateSplashImageToDB(
+                                SplashImages().apply {
+                                    this.date = now
+                                    this.images = images
+                                }
+                        )
                     }
         }
     }
