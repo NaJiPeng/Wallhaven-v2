@@ -9,9 +9,11 @@ import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseFragment
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
-import com.njp.wallhaven.utils.Events
+import com.njp.wallhaven.utils.ColorUtil
+import com.njp.wallhaven.utils.ScrollEvents
 import com.njp.wallhaven.utils.ToastUtil
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
+import com.scwang.smartrefresh.layout.footer.BallPulseFooter
 import jp.wasabeef.recyclerview.adapters.*
 import jp.wasabeef.recyclerview.animators.*
 import org.greenrobot.eventbus.EventBus
@@ -34,12 +36,14 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
     private var page = 1
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshLayout: SmartRefreshLayout
+    private lateinit var footer: BallPulseFooter
     private val adapter = ImagesAdapter()
 
     override fun initView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
         refreshLayout = root.findViewById(R.id.refreshLayout)
         recyclerView = root.findViewById(R.id.recyclerView)
+        footer = root.findViewById(R.id.footer)
 
         recyclerView.layoutManager = GridLayoutManager(context, 2)
         recyclerView.itemAnimator = FlipInTopXAnimator()
@@ -47,7 +51,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                EventBus.getDefault().post(if (dy > 0) Events.EVENT_SCROLL_UP else Events.EVENT_SCROLL_DOWN)
+                EventBus.getDefault().post(if (dy > 0) ScrollEvents.EVENT_SCROLL_UP else ScrollEvents.EVENT_SCROLL_DOWN)
             }
         })
 
@@ -58,16 +62,9 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
             refreshLayout.autoRefresh()
         }
 
+        EventBus.getDefault().register(this)
+        onChangeSkin(ColorUtil.getInstance().getCurrentColor())
         return root
-    }
-
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser) {
-            EventBus.getDefault().register(this)
-        } else {
-            EventBus.getDefault().unregister(this)
-        }
     }
 
 
@@ -101,11 +98,21 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
         refreshLayout.setNoMoreData(true)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onScrollToUp(event: Events) {
-        if (event == Events.EVENT_SCROLL_TO_TOP) {
+    fun onScrollToUp(event: ScrollEvents) {
+        if (event == ScrollEvents.EVENT_SCROLL_TO_TOP && userVisibleHint) {
             recyclerView.smoothScrollToPosition(0)
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onChangeSkin(color: Pair<String, Int>) {
+        footer.setAnimatingColor(color.second)
     }
 
 }
