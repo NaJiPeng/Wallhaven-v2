@@ -23,7 +23,7 @@ abstract class BaseFragment<V, P : BasePresenter<V>> : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
-        val view = initView(inflater, container!!)//让子类实现初始化视图
+        val view = createView(inflater, container!!)//让子类实现初始化视图
 
         isFirstLoad = true//视图创建完成，将变量置为true
 
@@ -36,7 +36,6 @@ abstract class BaseFragment<V, P : BasePresenter<V>> : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        presenter?.onDestroy()
         isFirstLoad = false//视图销毁将变量置为false
     }
 
@@ -50,6 +49,6 @@ abstract class BaseFragment<V, P : BasePresenter<V>> : Fragment() {
     }
 
     //初始化视图接口，子类必须实现
-    abstract fun initView(inflater: LayoutInflater, @Nullable container: ViewGroup): View
+    abstract fun createView(inflater: LayoutInflater, @Nullable container: ViewGroup): View
 
 }

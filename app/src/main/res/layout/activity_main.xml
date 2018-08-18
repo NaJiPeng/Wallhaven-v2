@@ -31,7 +31,7 @@
                 android:paddingRight="8dp"
                 android:paddingBottom="5dp"
                 android:text="  搜索"
-                android:textColor="#ccc"
+                android:textColor="#64ffffff"
                 android:textSize="15sp" />
 
         </android.support.v7.widget.Toolbar>

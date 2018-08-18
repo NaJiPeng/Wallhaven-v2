@@ -1,21 +1,25 @@
 package com.njp.wallhaven.ui.main
 
+import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.njp.wallhaven.R
+import com.njp.wallhaven.R.id.refreshLayout
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseFragment
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.utils.ColorUtil
-import com.njp.wallhaven.utils.ScrollEvents
+import com.njp.wallhaven.utils.ScrollEvent
+import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter
-import jp.wasabeef.recyclerview.adapters.*
-import jp.wasabeef.recyclerview.animators.*
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
+import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
+import kotlinx.android.synthetic.main.fragment_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -26,6 +30,7 @@ import org.greenrobot.eventbus.ThreadMode
 class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContract.View {
 
     companion object {
+        private const val REQUEST_CODE = 10001
         fun create(path: String) = MainFragment().apply {
             this.path = path
             setP(MainPresenter(this))
@@ -34,15 +39,16 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     private lateinit var path: String
     private var page = 1
+    private val adapter = ImagesAdapter()
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshLayout: SmartRefreshLayout
     private lateinit var footer: BallPulseFooter
-    private val adapter = ImagesAdapter()
 
-    override fun initView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun createView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
-        refreshLayout = root.findViewById(R.id.refreshLayout)
+
         recyclerView = root.findViewById(R.id.recyclerView)
+        refreshLayout = root.findViewById(R.id.refreshLayout)
         footer = root.findViewById(R.id.footer)
 
         recyclerView.layoutManager = GridLayoutManager(context, 2)
@@ -51,7 +57,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                EventBus.getDefault().post(if (dy > 0) ScrollEvents.EVENT_SCROLL_UP else ScrollEvents.EVENT_SCROLL_DOWN)
+                EventBus.getDefault().post(if (dy < 0) ScrollEvent.EVENT_SCROLL_UP else ScrollEvent.EVENT_SCROLL_DOWN)
             }
         })
 
@@ -64,9 +70,9 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
         EventBus.getDefault().register(this)
         onChangeSkin(ColorUtil.getInstance().getCurrentColor())
+
         return root
     }
-
 
     override fun onRefreshImages(images: List<SimpleImageInfo>) {
         adapter.setImages(images)
@@ -104,9 +110,16 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onScrollToUp(event: ScrollEvents) {
-        if (event == ScrollEvents.EVENT_SCROLL_TO_TOP && userVisibleHint) {
-            recyclerView.smoothScrollToPosition(0)
+    fun onScrollToUp(event: ScrollToEvent) {
+        if (userVisibleHint) {
+            recyclerView.let {
+                if (event.isSmooth) {
+                    it.smoothScrollToPosition(event.position)
+                } else {
+                    it.scrollToPosition(event.position)
+                }
+            }
+
         }
     }
 

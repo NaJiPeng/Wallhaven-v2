@@ -9,7 +9,7 @@ interface MainContract {
         fun onRefreshImagesFail(msg: String)
         fun onLoadMoreImages(images: List<SimpleImageInfo>)
         fun onLoadMoreImagesFail(msg: String)
-        fun onNoMore();
+        fun onNoMore()
     }
 
     interface Presenter {

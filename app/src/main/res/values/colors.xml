@@ -41,4 +41,6 @@
 
     <color name="black">#000000</color>
 
+    <color name="colorAccent">#2fffffff</color>
+
 </resources>

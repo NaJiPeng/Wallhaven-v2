@@ -9,6 +9,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.njp.wallhaven.R
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
+import com.njp.wallhaven.ui.detail.DetailActivity
+import com.njp.wallhaven.utils.CommonDataHolder
 
 class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
 
@@ -31,6 +33,7 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_image, parent, false)
+
         return ViewHolder(itemView)
     }
 
@@ -41,10 +44,17 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
                 .load(images[position].url)
                 .apply(RequestOptions().centerCrop())
                 .into(viewHolder.image)
+        viewHolder.itemView.setOnClickListener {
+            CommonDataHolder.setData(ArrayList(images))
+            DetailActivity.actionStart(viewHolder.itemView.context, position)
+        }
     }
 
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image = itemView.findViewById<ImageView>(R.id.image)
     }
+
+
+
 }

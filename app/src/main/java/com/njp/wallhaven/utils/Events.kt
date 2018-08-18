@@ -1,12 +1,14 @@
 package com.njp.wallhaven.utils
 
 /**
- * EventBus辅助事件类
+ * EventBus辅助事件
  */
-enum class ScrollEvents {
-    EVENT_SCROLL_TO_TOP,
+
+enum class ScrollEvent {
     EVENT_SCROLL_UP,
     EVENT_SCROLL_DOWN
 }
+
+data class ScrollToEvent(var position: Int, var isSmooth: Boolean)
 
 

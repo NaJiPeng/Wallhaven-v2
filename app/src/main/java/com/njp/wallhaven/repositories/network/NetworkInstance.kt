@@ -34,6 +34,11 @@ object NetworkInstance {
                 @Query("page") page: Int
         ): Observable<ResponseBody>
 
+        @GET("wallpaper/{id}")
+        fun getDetailImage(
+                @Path("id") id: Int
+        ): Observable<ResponseBody>
+
     }
 
 }

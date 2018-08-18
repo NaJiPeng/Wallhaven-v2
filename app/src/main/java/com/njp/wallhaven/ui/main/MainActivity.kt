@@ -10,12 +10,13 @@ import android.view.Menu
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.TabAdapter
-import com.njp.wallhaven.utils.ScrollEvents
+import com.njp.wallhaven.utils.ScrollEvent
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.View
 import com.njp.wallhaven.adapter.BottomSheetAdapter
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.SPUtil
+import com.njp.wallhaven.utils.ScrollToEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         tabLayout.setupWithViewPager(viewPager)
 
         fab.setOnClickListener {
-            EventBus.getDefault().post(ScrollEvents.EVENT_SCROLL_TO_TOP)
+            EventBus.getDefault().post(ScrollToEvent(0, true))
         }
         EventBus.getDefault().register(this)
 
@@ -75,10 +76,10 @@ class MainActivity : AppCompatActivity() {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onScrollEvent(events: ScrollEvents) {
-        when (events) {
-            ScrollEvents.EVENT_SCROLL_UP -> fab.show()
-            ScrollEvents.EVENT_SCROLL_DOWN -> fab.hide()
+    fun onScrollEvent(event: ScrollEvent) {
+        when (event) {
+            ScrollEvent.EVENT_SCROLL_UP -> fab.show()
+            ScrollEvent.EVENT_SCROLL_DOWN -> fab.hide()
         }
     }
 

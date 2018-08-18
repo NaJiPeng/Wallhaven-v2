@@ -27,26 +27,18 @@ class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.
         val date = Repository.getInstance().getSplashImagesFromDB()?.date
         val now = sdf.format(Date())
         if (date != now) {
-            Repository.getInstance().getImages("", 0)
+            Repository.getInstance().getSplashImages()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        val doc = Jsoup.parse(it.string())
-                        val elements = doc.select("#featured a")
-                        val images = elements.map {
-                            val href = it.attr("href")
-                            val url = "http:" + it.child(0).attr("src")
-                            SimpleImageInfo().apply {
-                                this.href = href
-                                this.url = url
-                            }
+                        it?.let { images ->
+                            Repository.getInstance().updateSplashImageToDB(
+                                    SplashImages().apply {
+                                        this.date = now
+                                        this.images = images
+                                    }
+                            )
                         }
-                        Repository.getInstance().updateSplashImageToDB(
-                                SplashImages().apply {
-                                    this.date = now
-                                    this.images = images
-                                }
-                        )
                     }
         }
     }
@@ -54,8 +46,9 @@ class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.
     override fun startTimer() {
         Observable.interval(1, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { view?.onTimer() }
-                .let { addDisposable(it) }
+                .subscribe {
+                    view?.onTimer()
+                }?.let { addDisposable(it) }
     }
 
 
