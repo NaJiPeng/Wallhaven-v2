@@ -1,5 +1,6 @@
 package com.njp.wallhaven.ui.main
 
+import android.util.Log
 import com.njp.wallhaven.base.BasePresenter
 import com.njp.wallhaven.repositories.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,8 +20,7 @@ class MainPresenter(view: MainContract.View) : MainContract.Presenter, BasePrese
                     }
                 }, {
                     view?.onRefreshImagesFail("网络连接失败 Q_Q")
-                }
-                )?.let { addDisposable(it) }
+                })?.let { addDisposable(it) }
     }
 
     override fun onLoadMoreImages(path: String, page: Int) {

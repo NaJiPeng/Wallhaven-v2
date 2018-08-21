@@ -16,7 +16,7 @@ class HistoryImages : BaseModel() {
     var id: Int = 0
 
     @Column
-    var data: String = ""
+    var date: String = ""
 
     var images: List<SimpleImageInfo>? = null
 
@@ -25,7 +25,7 @@ class HistoryImages : BaseModel() {
         if (images == null) {
             images = SQLite.select()
                     .from(SimpleImageInfo::class.java)
-                    .where(SimpleImageInfo_Table.isHistory.eq(true) and SimpleImageInfo_Table.data.eq(data))
+                    .where(SimpleImageInfo_Table.isHistory.eq(true) and SimpleImageInfo_Table.date.eq(date))
                     .queryList()
         }
         return images!!
@@ -34,7 +34,7 @@ class HistoryImages : BaseModel() {
     override fun save(): Boolean {
         images?.forEach {
             it.isHistory = true
-            it.data = data
+            it.date = date
             it.save()
         }
         return super.save()

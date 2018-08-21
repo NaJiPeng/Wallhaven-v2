@@ -1,5 +1,6 @@
 package com.njp.wallhaven.repositories
 
+import android.util.Log
 import com.njp.wallhaven.repositories.bean.*
 import com.njp.wallhaven.repositories.network.NetworkInstance
 import com.njp.wallhaven.repositories.network.NetworkInstance.retrofit
@@ -57,7 +58,7 @@ class Repository private constructor() {
         return service.getImages(path, page)
                 .map {
                     val doc = Jsoup.parse(it.string())
-                    val elements = doc.select(".thumb-listing-page figure")
+                    val elements = doc.select("#thumbs figure")
                     val images = elements.map { element ->
                         val url = element.getElementsByTag("img")[0].attr("data-src")
                         val id = element.attr("data-wallpaper-id").toInt()
