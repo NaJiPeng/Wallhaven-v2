@@ -16,6 +16,7 @@ import com.njp.wallhaven.utils.ScrollEvent
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.View
 import com.njp.wallhaven.adapter.BottomSheetAdapter
+import com.njp.wallhaven.ui.history.HistoryActivity
 import com.njp.wallhaven.ui.stared.StaredActivity
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.SPUtil
@@ -82,8 +83,7 @@ class MainActivity : AppCompatActivity() {
         super.onOptionsItemSelected(item)
         when (item?.itemId) {
             R.id.stared -> startActivity(Intent(this, StaredActivity::class.java))
-            //TODO
-//            R.id.history->
+            R.id.history -> startActivity(Intent(this, HistoryActivity::class.java))
         }
         return true
     }

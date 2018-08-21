@@ -18,15 +18,16 @@ class HistoryImages : BaseModel() {
     @Column
     var date: String = ""
 
-    var images: List<SimpleImageInfo>? = null
+    var images: MutableList<SimpleImageInfo>? = null
 
-    @OneToMany(methods = arrayOf(OneToMany.Method.ALL), variableName = "images")
-    fun createImages(): List<SimpleImageInfo> {
+    @OneToMany(methods = [OneToMany.Method.ALL], variableName = "images")
+    fun createImages(): MutableList<SimpleImageInfo> {
         if (images == null) {
             images = SQLite.select()
-                    .from(SimpleImageInfo::class.java)
-                    .where(SimpleImageInfo_Table.isHistory.eq(true) and SimpleImageInfo_Table.date.eq(date))
-                    .queryList()
+                            .from(SimpleImageInfo::class.java)
+                            .where(SimpleImageInfo_Table.isHistory.eq(true) and SimpleImageInfo_Table.date.eq(date))
+                            .queryList()
+
         }
         return images!!
     }
@@ -41,12 +42,11 @@ class HistoryImages : BaseModel() {
     }
 
     override fun delete(): Boolean {
-        images?.forEach { it.delete() }
+        images?.forEach {
+            it.delete()
+        }
         return super.delete()
     }
-
-
-
 
 
 }

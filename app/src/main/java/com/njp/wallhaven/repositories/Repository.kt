@@ -1,13 +1,11 @@
 package com.njp.wallhaven.repositories
 
-import android.util.Log
 import com.njp.wallhaven.repositories.bean.*
 import com.njp.wallhaven.repositories.network.NetworkInstance
 import com.njp.wallhaven.repositories.network.NetworkInstance.retrofit
 import com.raizlabs.android.dbflow.kotlinextensions.and
-import com.raizlabs.android.dbflow.kotlinextensions.delete
-import com.raizlabs.android.dbflow.kotlinextensions.where
 import com.raizlabs.android.dbflow.sql.language.SQLite
+import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction
 import io.reactivex.Observable
 import org.jsoup.Jsoup
 
@@ -36,18 +34,17 @@ class Repository private constructor() {
      */
     fun getSplashImages(): Observable<List<SimpleImageInfo>> {
         return service.getImages("", 0)
-                .map {
+                .map { it ->
                     val doc = Jsoup.parse(it.string())
                     val elements = doc.select("#featured a")
-                    val images = elements.map {
-                        val id = it.attr("href").split("/").last().toInt()
-                        val url = "http:" + it.child(0).attr("src")
+                    return@map elements.map { element ->
+                        val id = element.attr("href").split("/").last().toInt()
+                        val url = "http:" + element.child(0).attr("src")
                         SimpleImageInfo().apply {
-                            this.imageId = id
+                            imageId = id
                             this.url = url
                         }
                     }
-                    return@map images
                 }
     }
 
@@ -103,10 +100,9 @@ class Repository private constructor() {
      * 更新本地数据库中的闪屏页图片
      */
     fun updateSplashImageToDB(splashImages: SplashImages) {
-        SQLite.select()
+        SQLite.delete()
                 .from(SplashImages::class.java)
-                .queryList()
-                .forEach { it.delete() }
+                .execute()
         splashImages.save()
     }
 
@@ -125,8 +121,8 @@ class Repository private constructor() {
         SQLite.delete()
                 .from(SimpleImageInfo::class.java)
                 .where(SimpleImageInfo_Table.isStared.eq(true) and SimpleImageInfo_Table.imageId.eq(image.imageId))
-                .async()
-                .execute()
+                .queryList()
+                .forEach { it.delete() }
     }
 
     /**
@@ -148,6 +144,42 @@ class Repository private constructor() {
                 .from(SimpleImageInfo::class.java)
                 .where(SimpleImageInfo_Table.isStared.eq(true))
                 .queryList()
+                .asReversed()
+    }
+
+    /**
+     * 添加浏览记录
+     */
+    fun addHistory(image: SimpleImageInfo, date: String) {
+        val historyImages = SQLite.select()
+                .from(HistoryImages::class.java)
+                .where(HistoryImages_Table.date.eq(date))
+                .queryList()
+        val historyImage = if (historyImages.isNotEmpty()) historyImages.last() else HistoryImages().apply { this.date = date }
+        historyImage.apply {
+            this.images?.add(image)
+            this.save()
+        }
+    }
+
+    /**
+     * 获取历史记录列表
+     */
+    fun getHistory(): List<HistoryImages> {
+        return SQLite.select()
+                .from(HistoryImages::class.java)
+                .queryList()
+                .asReversed()
+    }
+
+    /**
+     * 清空浏览记录
+     */
+    fun clearHistory() {
+        SQLite.select()
+                .from(HistoryImages::class.java)
+                .queryList()
+                .forEach { it.delete() }
     }
 
 }

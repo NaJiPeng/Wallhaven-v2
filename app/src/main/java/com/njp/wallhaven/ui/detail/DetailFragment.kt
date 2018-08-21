@@ -109,19 +109,23 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                     .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .subscribe { granted ->
                         if (granted) {
-                            val path = File("${Environment.getExternalStorageDirectory().path}/Wallhaven")
-                            if (!path.exists()) {
-                                path.mkdirs()
-                            }
-                            val target = File(path, "wallhaven-${image.imageId}.png")
-                            val output = FileOutputStream(target)
-                            bitmap?.let { bitmap ->
-                                output.use { target ->
-                                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, target)
+                            Thread {
+                                val path = File("${Environment.getExternalStorageDirectory().path}/Wallhaven")
+                                if (!path.exists()) {
+                                    path.mkdirs()
                                 }
-                            }
-                            activity?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(target)))
-                            ToastUtil.show("已保存至${target.absoluteFile}")
+                                val target = File(path, "wallhaven-${image.imageId}.png")
+                                val output = FileOutputStream(target)
+                                bitmap?.let { bitmap ->
+                                    output.use { target ->
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, target)
+                                    }
+                                }
+                                activity?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(target)))
+                                activity?.runOnUiThread {
+                                    ToastUtil.show("已保存至${target.absoluteFile}")
+                                }
+                            }.start()
                         } else {
                             ToastUtil.show("未授权 T_T")
                         }

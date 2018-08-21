@@ -71,7 +71,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
     }
 
     override fun onRefreshImages(images: List<SimpleImageInfo>) {
-        adapter.setImages(images)
+        adapter.setData(images)
         page = 1
         refreshLayout.finishRefresh(true)
         refreshLayout.setNoMoreData(false)
@@ -83,7 +83,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
     }
 
     override fun onLoadMoreImages(images: List<SimpleImageInfo>) {
-        adapter.addImages(images)
+        adapter.addData(images)
         refreshLayout.finishLoadMore(true)
     }
 

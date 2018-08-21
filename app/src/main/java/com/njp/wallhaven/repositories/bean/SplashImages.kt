@@ -20,7 +20,7 @@ class SplashImages : BaseModel() {
 
     var images: List<SimpleImageInfo>? = null
 
-    @OneToMany(methods = arrayOf(OneToMany.Method.ALL), variableName = "images")
+    @OneToMany(methods = [OneToMany.Method.ALL], variableName = "images")
     fun createImages(): List<SimpleImageInfo> {
         if (images == null) {
             images = SQLite.select()

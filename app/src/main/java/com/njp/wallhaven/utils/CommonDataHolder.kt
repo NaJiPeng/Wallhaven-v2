@@ -24,6 +24,8 @@ class CommonDataHolder {
             detailData?.set(position - 1, detailImageInfo)
         }
 
+        fun getImage(position: Int) = simpleData?.get(position)
+
         fun removeData() {
             simpleData = null
             detailData = null
