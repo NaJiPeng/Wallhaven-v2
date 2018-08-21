@@ -16,5 +16,6 @@ data class SimpleImageInfo(
         @Column var url: String = "",
         @Column var isSPlash: Boolean = false,
         @Column var isHistory: Boolean = false,
-        @Column var isStared: Boolean = false
+        @Column var isStared: Boolean = false,
+        @Column var data: String = ""
 ) : BaseModel()

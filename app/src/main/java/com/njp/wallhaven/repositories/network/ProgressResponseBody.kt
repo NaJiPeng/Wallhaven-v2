@@ -1,5 +1,6 @@
 package com.njp.wallhaven.repositories.network
 
+import android.annotation.SuppressLint
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import okio.*
@@ -34,6 +35,7 @@ class ProgressResponseBody(private val url: String, private val responseBody: Re
 
         private var currentProgress = 0
 
+        @SuppressLint("CheckResult")
         override fun read(sink: Buffer?, byteCount: Long): Long {
             val bytesRead = super.read(sink, byteCount)
             totalBytesRead = if (bytesRead == -1L) contentLength() else totalBytesRead + bytesRead

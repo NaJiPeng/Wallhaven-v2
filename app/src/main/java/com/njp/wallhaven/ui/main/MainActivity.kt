@@ -1,5 +1,6 @@
 package com.njp.wallhaven.ui.main
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.support.design.widget.BottomSheetDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
+import android.view.MenuItem
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.TabAdapter
@@ -14,6 +16,7 @@ import com.njp.wallhaven.utils.ScrollEvent
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.View
 import com.njp.wallhaven.adapter.BottomSheetAdapter
+import com.njp.wallhaven.ui.stared.StaredActivity
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.SPUtil
 import com.njp.wallhaven.utils.ScrollToEvent
@@ -55,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     private fun initBottomSheet() {
         val recyclerView = View.inflate(this, R.layout.bottomsheet_colors, null) as RecyclerView
         val adapter = BottomSheetAdapter(ColorUtil.getInstance().list) {
@@ -72,6 +76,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        super.onOptionsItemSelected(item)
+        when (item?.itemId) {
+            R.id.stared -> startActivity(Intent(this, StaredActivity::class.java))
+            //TODO
+//            R.id.history->
+        }
+        return true
     }
 
 

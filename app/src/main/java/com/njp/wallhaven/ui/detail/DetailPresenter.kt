@@ -26,7 +26,7 @@ class DetailPresenter(view: DetailContract.View) : BasePresenter<DetailContract.
         Repository.getInstance().unStarImage(image)
     }
 
-    override fun isStared(image: SimpleImageInfo) :Boolean {
+    override fun isStared(image: SimpleImageInfo): Boolean {
         return Repository.getInstance().isStared(image)
     }
 

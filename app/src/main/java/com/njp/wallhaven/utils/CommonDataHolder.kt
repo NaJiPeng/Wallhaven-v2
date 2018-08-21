@@ -1,5 +1,6 @@
 package com.njp.wallhaven.utils
 
+import com.njp.wallhaven.repositories.bean.DetailImageInfo
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 
 /**
@@ -7,12 +8,25 @@ import com.njp.wallhaven.repositories.bean.SimpleImageInfo
  */
 class CommonDataHolder {
     companion object {
-        private var data: List<SimpleImageInfo>? = null
+        private var simpleData: List<SimpleImageInfo>? = null
+        private var detailData: Array<DetailImageInfo?>? = null
 
-        fun setData(list: List<SimpleImageInfo>) {
-            data = list
+        fun setSimpleData(list: List<SimpleImageInfo>) {
+            simpleData = list
+            detailData = Array(list.size) { null }
         }
 
-        fun getData() = data!!
+        fun getSimpleData() = simpleData!!
+
+        fun getDetailData(position: Int) = detailData?.get(position - 1)
+
+        fun setDetailData(detailImageInfo: DetailImageInfo, position: Int) {
+            detailData?.set(position - 1, detailImageInfo)
+        }
+
+        fun removeData() {
+            simpleData = null
+            detailData = null
+        }
     }
 }

@@ -1,13 +1,11 @@
 package com.njp.wallhaven.ui.main
 
-import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.njp.wallhaven.R
-import com.njp.wallhaven.R.id.refreshLayout
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseFragment
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
@@ -19,7 +17,6 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
 import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
-import kotlinx.android.synthetic.main.fragment_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -30,10 +27,8 @@ import org.greenrobot.eventbus.ThreadMode
 class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContract.View {
 
     companion object {
-        private const val REQUEST_CODE = 10001
         fun create(path: String) = MainFragment().apply {
             this.path = path
-            setP(MainPresenter(this))
         }
     }
 
@@ -46,6 +41,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     override fun createView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
+        presenter = MainPresenter(this)
 
         recyclerView = root.findViewById(R.id.recyclerView)
         refreshLayout = root.findViewById(R.id.refreshLayout)

@@ -4,6 +4,8 @@
     package="com.njp.wallhaven">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".base.MyApplication"
@@ -34,6 +36,9 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Detail" />
+        <activity android:name=".ui.stared.StaredActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

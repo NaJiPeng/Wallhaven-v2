@@ -45,7 +45,7 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
                 .apply(RequestOptions().centerCrop())
                 .into(viewHolder.image)
         viewHolder.itemView.setOnClickListener {
-            CommonDataHolder.setData(ArrayList(images))
+            CommonDataHolder.setSimpleData(ArrayList(images))
             DetailActivity.actionStart(viewHolder.itemView.context, position)
         }
     }

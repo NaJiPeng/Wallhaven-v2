@@ -139,4 +139,14 @@ class Repository private constructor() {
         return images.isNotEmpty()
     }
 
+    /**
+     * 获取收藏图片列表
+     */
+    fun getStartedImages(): List<SimpleImageInfo> {
+        return SQLite.select()
+                .from(SimpleImageInfo::class.java)
+                .where(SimpleImageInfo_Table.isStared.eq(true))
+                .queryList()
+    }
+
 }

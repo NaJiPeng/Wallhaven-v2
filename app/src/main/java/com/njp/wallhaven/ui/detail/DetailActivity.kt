@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.chip.Chip
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.DetailImagesAdapter
 import com.njp.wallhaven.utils.CommonDataHolder
 import kotlinx.android.synthetic.main.activity_detail.*
 
+/**
+ * 详情大图页
+ */
 class DetailActivity : AppCompatActivity() {
 
     companion object {
@@ -28,7 +30,7 @@ class DetailActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.anim_activity_1, R.anim.anim_activity_2)
         current = intent.getIntExtra("current", 0)
 
-        viewPager.adapter = DetailImagesAdapter(supportFragmentManager, CommonDataHolder.getData())
+        viewPager.adapter = DetailImagesAdapter(supportFragmentManager, CommonDataHolder.getSimpleData())
         viewPager.currentItem = current
 
     }
@@ -36,6 +38,11 @@ class DetailActivity : AppCompatActivity() {
     override fun finish() {
         super.finish()
         overridePendingTransition(R.anim.anim_activity_3, R.anim.anim_activity_4)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        CommonDataHolder.removeData()
     }
 
 }
