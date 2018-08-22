@@ -157,6 +157,7 @@ class Repository private constructor() {
                 .queryList()
         val historyImage = if (historyImages.isNotEmpty()) historyImages.last() else HistoryImages().apply { this.date = date }
         historyImage.apply {
+            this.images = this.images ?: ArrayList()
             this.images?.add(image)
             this.save()
         }
