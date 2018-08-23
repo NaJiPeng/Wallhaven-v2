@@ -28,12 +28,10 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     companion object {
         fun create(path: String) = MainFragment().apply {
-            this.path = path
+            this.setP(MainPresenter(this,path))
         }
     }
 
-    private lateinit var path: String
-    private var page = 1
     private val adapter = ImagesAdapter()
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshLayout: SmartRefreshLayout
@@ -41,7 +39,6 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     override fun createView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
-        setP(MainPresenter(this))
 
         recyclerView = root.findViewById(R.id.recyclerView)
         refreshLayout = root.findViewById(R.id.refreshLayout)
@@ -57,8 +54,8 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
             }
         })
 
-        refreshLayout.setOnRefreshListener { presenter.onRefreshImages(path) }
-        refreshLayout.setOnLoadMoreListener { presenter.onLoadMoreImages(path, ++page) }
+        refreshLayout.setOnRefreshListener { presenter.onRefreshImages() }
+        refreshLayout.setOnLoadMoreListener { presenter.onLoadMoreImages() }
 
         onLazyLoad = {
             refreshLayout.autoRefresh()
@@ -72,7 +69,6 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     override fun onRefreshImages(images: List<SimpleImageInfo>) {
         adapter.setData(images)
-        page = 1
         refreshLayout.finishRefresh(true)
         refreshLayout.setEnableLoadMore(true)
     }
@@ -89,13 +85,11 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     override fun onLoadMoreImagesFail(msg: String) {
         ToastUtil.show(msg)
-        page--
         refreshLayout.finishLoadMore(false)
     }
 
     override fun onNoMore() {
         ToastUtil.show("没有更多啦 >_<")
-        page--
         refreshLayout.finishLoadMore(false)
         refreshLayout.setEnableLoadMore(false)
     }

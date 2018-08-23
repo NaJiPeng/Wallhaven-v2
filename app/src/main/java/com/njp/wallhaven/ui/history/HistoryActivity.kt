@@ -83,6 +83,7 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
                                 runOnUiThread {
                                     adapter.clear()
                                     loadingDialog.dismiss()
+                                    ToastUtil.show("已清空")
                                 }
                             }.start()
                         }.setNegativeButton("取消") { p0, _ ->

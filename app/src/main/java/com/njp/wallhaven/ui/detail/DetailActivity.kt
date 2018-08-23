@@ -9,7 +9,9 @@ import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.DetailImagesAdapter
 import com.njp.wallhaven.repositories.Repository
 import com.njp.wallhaven.utils.CommonDataHolder
+import com.njp.wallhaven.utils.ScrollToEvent
 import kotlinx.android.synthetic.main.activity_detail.*
+import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -47,6 +49,7 @@ class DetailActivity : AppCompatActivity() {
             }
 
             override fun onPageSelected(p0: Int) {
+                current = p0
                 Repository.getInstance().addHistory(CommonDataHolder.getImage(p0)!!, today)
             }
 
@@ -61,6 +64,7 @@ class DetailActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         CommonDataHolder.removeData()
+        EventBus.getDefault().postSticky(ScrollToEvent(current,true))
     }
 
 }

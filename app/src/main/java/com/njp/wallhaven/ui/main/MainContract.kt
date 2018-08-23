@@ -13,8 +13,8 @@ interface MainContract {
     }
 
     interface Presenter {
-        fun onRefreshImages(path: String)
-        fun onLoadMoreImages(path: String, page: Int)
+        fun onRefreshImages()
+        fun onLoadMoreImages()
     }
 
 }
