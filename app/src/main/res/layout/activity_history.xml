@@ -32,6 +32,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <com.scwang.smartrefresh.layout.footer.BallPulseFooter
+            android:id="@+id/footer"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:srlNormalColor="@android:color/transparent" />
+
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -40,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="24dp"
-        app:backgroundTint="#00000000"
-        android:src="@drawable/ic_top" />
+        android:src="@drawable/ic_top"
+        app:backgroundTint="#00000000" />
 
 </android.support.design.widget.CoordinatorLayout>

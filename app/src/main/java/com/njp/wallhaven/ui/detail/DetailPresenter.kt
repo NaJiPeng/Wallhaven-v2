@@ -19,7 +19,7 @@ class DetailPresenter(view: DetailContract.View) : BasePresenter<DetailContract.
     }
 
     override fun starImage(image: SimpleImageInfo) {
-        Repository.getInstance().starImage(image)
+        Repository.getInstance().starImage(image.copy())
     }
 
     override fun unStarImage(image: SimpleImageInfo) {

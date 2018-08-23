@@ -38,7 +38,8 @@ class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), Sta
             }
         })
 
-        refreshLayout.setOnRefreshListener { presenter.getStaredImages() }
+        refreshLayout.setOnRefreshListener { presenter.refreshImages() }
+        refreshLayout.setOnLoadMoreListener { presenter.loadMoreImages() }
 
         fab.setOnClickListener { recyclerView.smoothScrollToPosition(0) }
 
@@ -48,15 +49,30 @@ class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), Sta
 
     }
 
-    override fun onStaredImages(images: List<SimpleImageInfo>) {
+    override fun onRefreshImages(images: List<SimpleImageInfo>) {
         adapter.setData(images)
         refreshLayout.finishRefresh()
+        refreshLayout.setEnableLoadMore(true)
     }
 
-    override fun onNoStaredImages() {
+    override fun onNoImages() {
+        adapter.clear()
         ToastUtil.show("你还没有收藏任何图片呢")
         refreshLayout.finishRefresh()
+        refreshLayout.setEnableLoadMore(false)
     }
+
+    override fun onLoadMoreImages(images: List<SimpleImageInfo>) {
+        adapter.addData(images)
+        refreshLayout.finishLoadMore()
+    }
+
+    override fun onNoMoreImages() {
+        refreshLayout.finishLoadMore()
+        ToastUtil.show("没有更多了 >_<")
+        refreshLayout.setEnableLoadMore(false)
+    }
+
 
     private fun onChangeColor(color: Pair<String, Int>) {
         StatusBarUtil.setColorNoTranslucent(this, color.second)
@@ -64,6 +80,7 @@ class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), Sta
         fab.backgroundTintList = ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
         )
+        footer.setAnimatingColor(color.second)
 
     }
 

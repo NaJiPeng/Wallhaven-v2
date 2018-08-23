@@ -23,8 +23,10 @@
             android:background="@drawable/bg_loading"
             android:padding="5dp">
 
-            <ProgressBar
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.Circle"
                 android:layout_width="60dp"
+                app:SpinKit_Color="@color/colorAccent"
                 android:layout_height="60dp" />
 
             <TextView

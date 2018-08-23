@@ -1,6 +1,5 @@
 package com.njp.wallhaven.ui.main
 
-import android.util.Log
 import com.njp.wallhaven.base.BasePresenter
 import com.njp.wallhaven.repositories.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -4,8 +4,8 @@ import com.njp.wallhaven.repositories.bean.*
 import com.njp.wallhaven.repositories.network.NetworkInstance
 import com.njp.wallhaven.repositories.network.NetworkInstance.retrofit
 import com.raizlabs.android.dbflow.kotlinextensions.and
+import com.raizlabs.android.dbflow.kotlinextensions.whereExists
 import com.raizlabs.android.dbflow.sql.language.SQLite
-import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction
 import io.reactivex.Observable
 import org.jsoup.Jsoup
 
@@ -41,7 +41,7 @@ class Repository private constructor() {
                         val id = element.attr("href").split("/").last().toInt()
                         val url = "http:" + element.child(0).attr("src")
                         SimpleImageInfo().apply {
-                            imageId = id
+                            this.id = id
                             this.url = url
                         }
                     }
@@ -61,7 +61,7 @@ class Repository private constructor() {
                         val id = element.attr("data-wallpaper-id").toInt()
                         SimpleImageInfo().apply {
                             this.url = url
-                            this.imageId = id
+                            this.id = id
                         }
                     }
                     return@map images
@@ -89,21 +89,40 @@ class Repository private constructor() {
     /**
      * 从本地数据库中获取闪屏页图片
      */
-    fun getSplashImagesFromDB(): SplashImages? {
-        val list = SQLite.select()
-                .from(SplashImages::class.java)
+    fun getSplashImagesFromDB(): MutableList<SimpleImageInfo> {
+        return SQLite.select()
+                .from(SimpleImageInfo::class.java)
+                .where(SimpleImageInfo_Table.isSPlash.eq(true))
                 .queryList()
-        return if (list.isNotEmpty()) list[0] else null
     }
 
     /**
      * 更新本地数据库中的闪屏页图片
      */
-    fun updateSplashImageToDB(splashImages: SplashImages) {
-        SQLite.delete()
-                .from(SplashImages::class.java)
-                .execute()
-        splashImages.save()
+    fun updateSplashImageToDB(images: List<SimpleImageInfo>) {
+        SQLite.select()
+                .from(SimpleImageInfo::class.java)
+                .where(SimpleImageInfo_Table.isSPlash.eq(true))
+                .queryList().forEach {
+                    it.isSPlash = false
+                    it.selfCheck()
+                }
+        images.forEach {
+            if (it.exists()) {
+                SQLite.select()
+                        .from(SimpleImageInfo::class.java)
+                        .where(SimpleImageInfo_Table.id.eq(it.id))
+                        .querySingle()?.apply {
+                            this.isSPlash = true
+                            this.save()
+                        }
+
+
+            } else {
+                it.isSPlash = true
+                it.save()
+            }
+        }
     }
 
     /**
@@ -118,59 +137,70 @@ class Repository private constructor() {
      * 取消收藏
      */
     fun unStarImage(image: SimpleImageInfo) {
-        SQLite.delete()
+        SQLite.select()
                 .from(SimpleImageInfo::class.java)
-                .where(SimpleImageInfo_Table.isStared.eq(true) and SimpleImageInfo_Table.imageId.eq(image.imageId))
-                .queryList()
-                .forEach { it.delete() }
+                .where(SimpleImageInfo_Table.isStared.eq(true) and SimpleImageInfo_Table.id.eq(image.id))
+                .querySingle()?.apply {
+                    this.isStared = false
+                    this.save()
+                    this.selfCheck()
+                }
     }
 
     /**
      * 判断图片是否收藏
      */
     fun isStared(image: SimpleImageInfo): Boolean {
-        val images = SQLite.select()
+        return SQLite.select()
                 .from(SimpleImageInfo::class.java)
-                .where(SimpleImageInfo_Table.isStared.eq(true) and SimpleImageInfo_Table.imageId.eq(image.imageId))
-                .queryList()
-        return images.isNotEmpty()
+                .where(SimpleImageInfo_Table.isStared.eq(true) and SimpleImageInfo_Table.id.eq(image.id))
+                .querySingle() != null
+
     }
 
     /**
      * 获取收藏图片列表
      */
-    fun getStartedImages(): List<SimpleImageInfo> {
+    fun getStartedImages(page: Int): List<SimpleImageInfo> {
         return SQLite.select()
                 .from(SimpleImageInfo::class.java)
                 .where(SimpleImageInfo_Table.isStared.eq(true))
+                .limit(24)
+                .offset(page * 24)
                 .queryList()
-                .asReversed()
     }
 
     /**
      * 添加浏览记录
      */
     fun addHistory(image: SimpleImageInfo, date: String) {
-        val historyImages = SQLite.select()
-                .from(HistoryImages::class.java)
-                .where(HistoryImages_Table.date.eq(date))
-                .queryList()
-        val historyImage = if (historyImages.isNotEmpty()) historyImages.last() else HistoryImages().apply { this.date = date }
-        historyImage.apply {
-            this.images = this.images ?: ArrayList()
-            this.images?.add(image)
-            this.save()
+        if (image.exists()) {
+            SQLite.select()
+                    .from(SimpleImageInfo::class.java)
+                    .where(SimpleImageInfo_Table.id.eq(image.id))
+                    .querySingle()?.apply {
+                        this.isHistory = true
+                        this.date = date
+                        this.save()
+                    }
+        } else {
+            image.isHistory = true
+            image.date = date
+            image.save()
         }
     }
 
     /**
      * 获取历史记录列表
      */
-    fun getHistory(): List<HistoryImages> {
+    fun getHistory(page: Int): List<SimpleImageInfo> {
         return SQLite.select()
-                .from(HistoryImages::class.java)
+                .from(SimpleImageInfo::class.java)
+                .where(SimpleImageInfo_Table.isHistory.eq(true))
+                .orderBy(SimpleImageInfo_Table.date, false)
+                .limit(24)
+                .offset(page * 24)
                 .queryList()
-                .asReversed()
     }
 
     /**
@@ -178,9 +208,14 @@ class Repository private constructor() {
      */
     fun clearHistory() {
         SQLite.select()
-                .from(HistoryImages::class.java)
+                .from(SimpleImageInfo::class.java)
+                .where(SimpleImageInfo_Table.isHistory.eq(true))
                 .queryList()
-                .forEach { it.delete() }
+                .forEach {
+                    it.isHistory = false
+                    it.save()
+                    it.selfCheck()
+                }
     }
 
 }

@@ -4,19 +4,22 @@ import com.njp.wallhaven.base.BasePresenter
 import com.njp.wallhaven.repositories.Repository
 
 class HistoryPresenter(view: HistoryContract.View) : HistoryContract.Presenter, BasePresenter<HistoryContract.View>(view) {
-    override fun getHistoryImages() {
-        val images = Repository.getInstance().getHistory()
+
+    private var page = 0
+
+    override fun refreshImages() {
+        page = 0
+        val images = Repository.getInstance().getHistory(0)
+        if (images.isNotEmpty()) view?.onRefreshImages(images) else view?.onNoImages()
+    }
+
+    override fun loadMoreImages() {
+        val images = Repository.getInstance().getHistory(++page)
         if (images.isNotEmpty()) {
-            val data = ArrayList<Any>()
-            images.forEach {
-                if (it.images?.isNotEmpty() == true) {
-                    data.add(it.date)
-                    data.addAll(it.images!!.asReversed())
-                }
-            }
-            if (data.isEmpty()) view?.onNoHistoryImages() else view?.onHistoryImages(data)
+            view?.onLoadMoreImages(images)
         } else {
-            view?.onNoHistoryImages()
+            view?.onNoMoreImages()
+            page--
         }
     }
 

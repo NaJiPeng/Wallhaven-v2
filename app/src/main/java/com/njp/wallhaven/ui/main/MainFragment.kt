@@ -41,7 +41,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     override fun createView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
-        presenter = MainPresenter(this)
+        setP(MainPresenter(this))
 
         recyclerView = root.findViewById(R.id.recyclerView)
         refreshLayout = root.findViewById(R.id.refreshLayout)
@@ -74,7 +74,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
         adapter.setData(images)
         page = 1
         refreshLayout.finishRefresh(true)
-        refreshLayout.setNoMoreData(false)
+        refreshLayout.setEnableLoadMore(true)
     }
 
     override fun onRefreshImagesFail(msg: String) {
@@ -97,7 +97,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
         ToastUtil.show("没有更多啦 >_<")
         page--
         refreshLayout.finishLoadMore(false)
-        refreshLayout.setNoMoreData(true)
+        refreshLayout.setEnableLoadMore(false)
     }
 
     override fun onDestroy() {

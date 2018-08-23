@@ -1,18 +1,20 @@
 package com.njp.wallhaven.ui.history
 
-import android.content.DialogInterface
+import android.app.Dialog
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.Window
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseActivity
+import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.ToastUtil
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
@@ -23,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_history.*
 class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View, HistoryPresenter>() {
 
     private val adapter = ImagesAdapter()
+    private lateinit var loadingDialog: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,9 +46,17 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
             }
         })
 
-        refreshLayout.setOnRefreshListener { presenter.getHistoryImages() }
+        refreshLayout.setOnRefreshListener { presenter.refreshImages() }
+        refreshLayout.setOnLoadMoreListener { presenter.loadMoreImages() }
 
         fab.setOnClickListener { recyclerView.smoothScrollToPosition(0) }
+
+        loadingDialog = Dialog(this, R.style.dialog)
+        val dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_loading, null)
+        loadingDialog.setContentView(dialogView)
+        loadingDialog.setCancelable(false)
+
 
         onChangeColor(ColorUtil.getInstance().getCurrentColor())
 
@@ -64,9 +75,16 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
             R.id.clear -> {
                 AlertDialog.Builder(this)
                         .setMessage("是否清空浏览记录？")
-                        .setPositiveButton("确定") { _, _ ->
-                            presenter.clearHistoryImages()
-                            adapter.clear()
+                        .setPositiveButton("确定") { p0, _ ->
+                            p0?.dismiss()
+                            loadingDialog.show()
+                            Thread {
+                                presenter.clearHistoryImages()
+                                runOnUiThread {
+                                    adapter.clear()
+                                    loadingDialog.dismiss()
+                                }
+                            }.start()
                         }.setNegativeButton("取消") { p0, _ ->
                             p0?.dismiss()
                         }.show()
@@ -75,14 +93,27 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
         return true
     }
 
-    override fun onHistoryImages(data: List<Any>) {
+    override fun onRefreshImages(data: List<SimpleImageInfo>) {
         adapter.setData(data)
         refreshLayout.finishRefresh()
+        refreshLayout.setEnableLoadMore(true)
     }
 
-    override fun onNoHistoryImages() {
+    override fun onNoImages() {
         ToastUtil.show("无浏览记录")
         refreshLayout.finishRefresh()
+        refreshLayout.setEnableLoadMore(false)
+    }
+
+    override fun onLoadMoreImages(data: List<SimpleImageInfo>) {
+        adapter.addData(data)
+        refreshLayout.finishLoadMore()
+    }
+
+    override fun onNoMoreImages() {
+        ToastUtil.show("没有更多啦 >_<")
+        refreshLayout.finishLoadMore()
+        refreshLayout.setEnableLoadMore(false)
     }
 
     private fun onChangeColor(color: Pair<String, Int>) {
@@ -91,7 +122,7 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
         fab.backgroundTintList = ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
         )
-
+        footer.setAnimatingColor(color.second)
     }
 
 }

@@ -5,12 +5,15 @@ import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 interface StaredContract {
 
     interface View {
-        fun onStaredImages(images: List<SimpleImageInfo>)
-        fun onNoStaredImages()
+        fun onRefreshImages(images: List<SimpleImageInfo>)
+        fun onLoadMoreImages(images: List<SimpleImageInfo>)
+        fun onNoMoreImages()
+        fun onNoImages()
     }
 
     interface Presenter {
-        fun getStaredImages()
+        fun refreshImages()
+        fun loadMoreImages()
     }
 
 }

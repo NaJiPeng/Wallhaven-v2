@@ -2,13 +2,10 @@ package com.njp.wallhaven.ui.splash
 
 import android.annotation.SuppressLint
 import com.njp.wallhaven.base.BasePresenter
-import com.njp.wallhaven.repositories.bean.SimpleImageInfo
-import com.njp.wallhaven.repositories.bean.SplashImages
 import com.njp.wallhaven.repositories.Repository
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.jsoup.Jsoup
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -16,31 +13,23 @@ import java.util.concurrent.TimeUnit
 class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.View>(view), SplashContract.Presenter {
 
     override fun getSplashImage() {
-        val images = Repository.getInstance().getSplashImagesFromDB()?.images
-        view?.onSplashImage(images?.get(Random().nextInt(images.size)))
+        val images = Repository.getInstance().getSplashImagesFromDB()
+        if (images.isNotEmpty()) {
+            view?.onSplashImage(images[Random().nextInt(images.size)])
+        }
     }
 
 
     @SuppressLint("CheckResult")
     override fun updateSplashImages() {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
-        val date = Repository.getInstance().getSplashImagesFromDB()?.date
-        val now = sdf.format(Date())
-        if (date != now) {
-            Repository.getInstance().getSplashImages()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        it?.let { images ->
-                            Repository.getInstance().updateSplashImageToDB(
-                                    SplashImages().apply {
-                                        this.date = now
-                                        this.images = images
-                                    }
-                            )
-                        }
-                    }
-        }
+        Repository.getInstance().getSplashImages()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe (
+                        { Repository.getInstance().updateSplashImageToDB(it) },
+                        {}
+                )
+
     }
 
     override fun startTimer() {

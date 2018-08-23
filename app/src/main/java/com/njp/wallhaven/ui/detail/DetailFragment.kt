@@ -114,7 +114,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                                 if (!path.exists()) {
                                     path.mkdirs()
                                 }
-                                val target = File(path, "wallhaven-${image.imageId}.png")
+                                val target = File(path, "wallhaven-${image.id}.png")
                                 val output = FileOutputStream(target)
                                 bitmap?.let { bitmap ->
                                     output.use { target ->
@@ -134,7 +134,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
         if (detailImageInfo != null) {
             onGetDetailImageSuccess(detailImageInfo!!)
         } else {
-            presenter.getDetailImage(image.imageId)
+            presenter.getDetailImage(image.id)
         }
     }
 
