@@ -28,6 +28,7 @@ import java.io.File
 import android.graphics.Bitmap
 import android.net.Uri
 import com.njp.wallhaven.repositories.network.ProgressInterceptor
+import com.njp.wallhaven.ui.tag.TagActivity
 import com.njp.wallhaven.utils.CommonDataHolder
 import java.io.FileOutputStream
 
@@ -169,8 +170,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
             chipGroup.addView(Chip(context).apply {
                 this.text = tag.name
                 this.setOnClickListener {
-                    //TODO
-                    ToastUtil.show("${tag.id}")
+                    TagActivity.actionStart(context,tag)
                 }
             })
         }

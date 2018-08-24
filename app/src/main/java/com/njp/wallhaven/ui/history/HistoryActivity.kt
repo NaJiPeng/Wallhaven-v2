@@ -9,17 +9,21 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.Window
+import com.github.ybq.android.spinkit.SpinKitView
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseActivity
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.utils.ColorUtil
+import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
 import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
 import kotlinx.android.synthetic.main.activity_history.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 
 class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View, HistoryPresenter>() {
@@ -55,6 +59,8 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
         val dialogView = LayoutInflater.from(this)
                 .inflate(R.layout.dialog_loading, null)
         loadingDialog.setContentView(dialogView)
+        val spinKit = dialogView.findViewById<SpinKitView>(R.id.spinKit)
+        spinKit.setColor(ColorUtil.getInstance().getCurrentColor().second)
         loadingDialog.setCancelable(false)
 
 
@@ -62,6 +68,16 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
 
         refreshLayout.autoRefresh()
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -124,6 +140,17 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
                 arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
         )
         footer.setAnimatingColor(color.second)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onScrollToUp(event: ScrollToEvent) {
+        recyclerView.let {
+            if (event.isSmooth) {
+                it.smoothScrollToPosition(event.position)
+            } else {
+                it.scrollToPosition(event.position)
+            }
+        }
     }
 
 }

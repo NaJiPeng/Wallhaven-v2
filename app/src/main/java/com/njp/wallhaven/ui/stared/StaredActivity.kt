@@ -10,10 +10,14 @@ import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseActivity
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.utils.ColorUtil
+import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
 import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
 import kotlinx.android.synthetic.main.activity_stared.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), StaredContract.View {
 
@@ -49,6 +53,16 @@ class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), Sta
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     override fun onRefreshImages(images: List<SimpleImageInfo>) {
         adapter.setData(images)
         refreshLayout.finishRefresh()
@@ -82,6 +96,17 @@ class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), Sta
         )
         footer.setAnimatingColor(color.second)
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onScrollToUp(event: ScrollToEvent) {
+        recyclerView.let {
+            if (event.isSmooth) {
+                it.smoothScrollToPosition(event.position)
+            } else {
+                it.scrollToPosition(event.position)
+            }
+        }
     }
 
 }

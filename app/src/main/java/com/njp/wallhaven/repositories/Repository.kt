@@ -218,4 +218,26 @@ class Repository private constructor() {
                 }
     }
 
+    /**
+     * 从网络上获取tag相关图片信息
+     */
+    fun getTagImageInfo(tagId: Int): Observable<TagImageInfo> {
+        return service.getTagImageInfo(tagId)
+                .map {
+                    val doc = Jsoup.parse(it.string())
+                    val titleImageUrl = "http:" + doc.select("#tag-header-wrapper")[0]
+                            .attr("style")
+                            .split("(", ")")[1]
+                    val images = doc.select("#tag-thumbs figure")
+                            .map { element ->
+                                val id = element.attr("data-wallpaper-id").toInt()
+                                val url = element.select("img")[0].attr("data-src")
+                                return@map SimpleImageInfo().apply {
+                                    this.id = id
+                                    this.url = url
+                                }
+                            }
+                    return@map TagImageInfo(titleImageUrl, images)
+                }
+    }
 }

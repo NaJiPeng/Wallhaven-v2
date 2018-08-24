@@ -89,7 +89,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    override fun onBackPressed() {
+        moveTaskToBack(true)
+    }
+
+
+
+        @Subscribe(threadMode = ThreadMode.MAIN)
     fun onScrollEvent(event: ScrollEvent) {
         when (event) {
             ScrollEvent.EVENT_SCROLL_UP -> fab.show()

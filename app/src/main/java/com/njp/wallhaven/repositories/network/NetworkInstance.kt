@@ -39,6 +39,12 @@ object NetworkInstance {
                 @Path("id") id: Int
         ): Observable<ResponseBody>
 
+        @GET("tag/{id}")
+        fun getTagImageInfo(
+                @Path("id") id: Int
+        ): Observable<ResponseBody>
+
+
     }
 
 }

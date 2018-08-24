@@ -8,11 +8,11 @@
     android:background="@drawable/bg_loading"
     android:padding="5dp">
 
-
     <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/spinKit"
         style="@style/SpinKitView.Wave"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         app:SpinKit_Color="@android:color/white" />
 
 
