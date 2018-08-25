@@ -2,8 +2,10 @@ package com.njp.wallhaven.utils
 
 import android.app.Activity
 import com.njp.wallhaven.ui.detail.DetailActivity
-import com.njp.wallhaven.ui.tag.TagActivity
 
+/**
+ * 管理Activity的工具
+ */
 class ActivityController private constructor() {
 
     companion object {
@@ -16,30 +18,33 @@ class ActivityController private constructor() {
         }
     }
 
-    private val list = ArrayList<Activity>()
-    var preDetailSign = false
+    private val activities = ArrayList<Activity>()
+    private var preDetailSign = false
 
     fun add(activity: Activity) {
-        list.add(activity)
+        check()
+        activities.add(activity)
+        if (activity is DetailActivity) {
+            preDetailSign = false
+        }
     }
 
     fun remove(activity: Activity) {
-        list.remove(activity)
-        if (list.filterIsInstance<DetailActivity>().isEmpty() && !preDetailSign) {
+        activities.remove(activity)
+        if (activity is DetailActivity && !preDetailSign) {
             CommonDataHolder.removeData()
         }
     }
 
-    fun clearDetail() {
-        list.filterIsInstance<DetailActivity>().forEach { it.finish() }
+    private fun check() {
+        if (activities.size >= 5) {
+            activities.first().finish()
+        }
     }
 
-    fun clearTag() {
-        list.filterIsInstance<TagActivity>().let {
-            if (it.size >= 2) {
-                it.last().finish()
-            }
-        }
+    fun clearDetail() {
+        activities.filterIsInstance<DetailActivity>().forEach { it.finish() }
+        preDetailSign = true
     }
 
 }

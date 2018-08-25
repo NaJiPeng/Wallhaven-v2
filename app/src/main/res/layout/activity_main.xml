@@ -54,14 +54,14 @@
     </android.support.v4.view.ViewPager>
 
     <com.github.clans.fab.FloatingActionButton
-        app:fab_colorNormal="@color/blue"
-        app:fab_colorPressed="@color/blue"
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="24dp"
-        android:src="@drawable/ic_top" />
+        android:src="@drawable/ic_top"
+        app:fab_colorNormal="@color/blue"
+        app:fab_colorPressed="@color/blue" />
 
 </android.support.design.widget.CoordinatorLayout>
 

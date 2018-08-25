@@ -25,7 +25,6 @@ class DetailActivity : AppCompatActivity() {
     companion object {
         fun actionStart(context: Context, images: List<SimpleImageInfo>, current: Int) {
             ActivityController.getInstance().clearDetail()
-            ActivityController.getInstance().preDetailSign = true
             CommonDataHolder.removeData()
             CommonDataHolder.setSimpleData(ArrayList<SimpleImageInfo>(images))
             val intent = Intent(context, DetailActivity::class.java)
@@ -41,7 +40,6 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ActivityController.getInstance().add(this)
-        ActivityController.getInstance().preDetailSign = false
         setContentView(R.layout.activity_detail)
         overridePendingTransition(R.anim.anim_activity_1, R.anim.anim_activity_2)
         current = intent.getIntExtra("current", 0)

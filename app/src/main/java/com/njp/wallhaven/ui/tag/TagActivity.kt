@@ -24,11 +24,13 @@ import kotlinx.android.synthetic.main.activity_tag.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
+/**
+ * 标签页
+ */
 class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.View {
 
     companion object {
         fun actionStart(context: Context, tag: Tag) {
-            ActivityController.getInstance().clearTag()
             val intent = Intent(context, TagActivity::class.java)
             intent.putExtra("tagId", tag.id)
             intent.putExtra("tagName", tag.name)
