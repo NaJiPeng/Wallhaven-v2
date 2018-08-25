@@ -1,29 +1,34 @@
 package com.njp.wallhaven.ui.tag
 
+import android.animation.AnimatorInflater
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.support.design.widget.AppBarLayout
 import android.support.v7.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseActivity
 import com.njp.wallhaven.repositories.bean.Tag
 import com.njp.wallhaven.repositories.bean.TagImageInfo
+import com.njp.wallhaven.utils.ActivityController
 import com.njp.wallhaven.utils.ColorUtil
+import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
 import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
 import kotlinx.android.synthetic.main.activity_tag.*
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.View {
 
     companion object {
         fun actionStart(context: Context, tag: Tag) {
+            ActivityController.getInstance().clearTag()
             val intent = Intent(context, TagActivity::class.java)
             intent.putExtra("tagId", tag.id)
             intent.putExtra("tagName", tag.name)
@@ -36,6 +41,7 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ActivityController.getInstance().add(this)
         setContentView(R.layout.activity_tag)
         setP(TagPresenter((this)))
 
@@ -48,6 +54,39 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
         toolBar.setNavigationIcon(R.drawable.ic_back)
         toolBar.setNavigationOnClickListener { onBackPressed() }
         title = tag.name
+
+        appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
+            if (offset == 0) {
+                fabSearch.show(true)
+                fabStar.show(true)
+            } else {
+                fabSearch.hide(true)
+                fabStar.hide(true)
+            }
+        })
+
+        val animatorStar = AnimatorInflater.loadAnimator(this, R.animator.animator_fab)
+        animatorStar.setTarget(fabStar)
+        if (presenter.isTagStared(tag)) fabStar.setImageResource(R.drawable.ic_stared)
+        fabStar.setOnClickListener {
+            animatorStar.start()
+            if (presenter.isTagStared(tag)) {
+                presenter.unStarTag(tag)
+                ToastUtil.show("已取消收藏")
+                fabStar.setImageResource(R.drawable.ic_stared_false)
+            } else {
+                presenter.starTag(tag)
+                ToastUtil.show("已收藏")
+
+                fabStar.setImageResource(R.drawable.ic_stared)
+            }
+        }
+        val animatorSearch = AnimatorInflater.loadAnimator(this, R.animator.animator_fab)
+        animatorSearch.setTarget(fabSearch)
+        fabSearch.setOnClickListener {
+            //TODO
+            animatorSearch.start()
+        }
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.itemAnimator = FlipInTopXAnimator()
@@ -79,12 +118,27 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
         appBarLayout.setBackgroundColor(color.second)
         collapsingLayout.setContentScrimColor(color.second)
         collapsingLayout.statusBarScrim = ColorDrawable(color.second)
-        fabStar.backgroundTintList = ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
-        )
-        fabSearch.backgroundTintList = ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
-        )
+        fabStar.colorNormal = color.second
+        fabStar.colorPressed = color.second
+        fabSearch.colorNormal = color.second
+        fabSearch.colorPressed = color.second
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ActivityController.getInstance().remove(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onScrollToUp(event: ScrollToEvent) {
+        recyclerView.let {
+            if (event.isSmooth) {
+                it.smoothScrollToPosition(event.position)
+            } else {
+                it.scrollToPosition(event.position)
+            }
+        }
+    }
+
 
 }

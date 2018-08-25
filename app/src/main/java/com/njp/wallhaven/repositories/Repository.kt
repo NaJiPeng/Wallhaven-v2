@@ -225,9 +225,12 @@ class Repository private constructor() {
         return service.getTagImageInfo(tagId)
                 .map {
                     val doc = Jsoup.parse(it.string())
-                    val titleImageUrl = "http:" + doc.select("#tag-header-wrapper")[0]
-                            .attr("style")
+                    val titleImage = doc.select("#tag-header-wrapper")[0]
+                    val titleImageUrl = "http:" + titleImage.attr("style")
                             .split("(", ")")[1]
+                    val imageId = titleImage.select("a")[0].attr("href")
+                            .split("/").last().toInt()
+                    val imageUrl = "https://alpha.wallhaven.cc/wallpapers/thumb/small/th-$imageId.jpg"
                     val images = doc.select("#tag-thumbs figure")
                             .map { element ->
                                 val id = element.attr("data-wallpaper-id").toInt()
@@ -237,7 +240,30 @@ class Repository private constructor() {
                                     this.url = url
                                 }
                             }
-                    return@map TagImageInfo(titleImageUrl, images)
+                    val imageList = ArrayList<SimpleImageInfo>()
+                    imageList.add(SimpleImageInfo(imageId, imageUrl))
+                    imageList.addAll(images)
+                    return@map TagImageInfo(titleImageUrl, imageList)
                 }
     }
+
+    /**
+     * 收藏Tag
+     */
+    fun starTag(tag: Tag) {
+        tag.save()
+    }
+
+    /**
+     * 取消收藏Tag
+     */
+    fun unStarTag(tag: Tag){
+        tag.delete()
+    }
+
+    /**
+     * 判断Tag是否已收藏
+     */
+    fun isTagStared(tag: Tag) = tag.exists()
+
 }

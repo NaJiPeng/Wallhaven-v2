@@ -1,5 +1,6 @@
 package com.njp.wallhaven.ui.tag
 
+import com.njp.wallhaven.repositories.bean.Tag
 import com.njp.wallhaven.repositories.bean.TagImageInfo
 
 interface TagContract {
@@ -11,6 +12,9 @@ interface TagContract {
 
     interface Presenter {
         fun getTagImageInfo(tagId: Int)
+        fun starTag(tag: Tag)
+        fun unStarTag(tag: Tag)
+        fun isTagStared(tag: Tag): Boolean
     }
 
 }

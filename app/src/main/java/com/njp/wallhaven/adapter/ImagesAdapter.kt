@@ -10,7 +10,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.njp.wallhaven.R
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.ui.detail.DetailActivity
-import com.njp.wallhaven.utils.CommonDataHolder
 
 class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
 
@@ -52,8 +51,7 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
                 .apply(RequestOptions().centerCrop())
                 .into(viewHolder.image)
         viewHolder.itemView.setOnClickListener { _ ->
-            CommonDataHolder.setSimpleData(ArrayList<SimpleImageInfo>(images))
-            DetailActivity.actionStart(viewHolder.itemView.context, position)
+            DetailActivity.actionStart(viewHolder.itemView.context, images, position)
         }
     }
 

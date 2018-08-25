@@ -1,5 +1,6 @@
 package com.njp.wallhaven.ui.main
 
+import android.animation.AnimatorInflater
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.support.v7.app.AppCompatActivity
@@ -45,7 +46,10 @@ class MainActivity : AppCompatActivity() {
         viewPager.offscreenPageLimit = 3
         tabLayout.setupWithViewPager(viewPager)
 
+        val animator = AnimatorInflater.loadAnimator(this,R.animator.animator_fab)
+        animator.setTarget(fab)
         fab.setOnClickListener {
+            animator.start()
             EventBus.getDefault().post(ScrollToEvent(0, true))
         }
         EventBus.getDefault().register(this)
@@ -98,8 +102,8 @@ class MainActivity : AppCompatActivity() {
         @Subscribe(threadMode = ThreadMode.MAIN)
     fun onScrollEvent(event: ScrollEvent) {
         when (event) {
-            ScrollEvent.EVENT_SCROLL_UP -> fab.show()
-            ScrollEvent.EVENT_SCROLL_DOWN -> fab.hide()
+            ScrollEvent.EVENT_SCROLL_UP -> fab.show(true)
+            ScrollEvent.EVENT_SCROLL_DOWN -> fab.hide(true)
         }
     }
 
@@ -108,9 +112,8 @@ class MainActivity : AppCompatActivity() {
         StatusBarUtil.setColorNoTranslucent(this, color.second)
         toolBar.setBackgroundColor(color.second)
         tabLayout.setBackgroundColor(color.second)
-        fab.backgroundTintList = ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
-        )
+        fab.colorNormal = color.second
+        fab.colorPressed = color.second
     }
 
     override fun onDestroy() {

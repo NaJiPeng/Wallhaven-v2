@@ -1,5 +1,6 @@
 package com.njp.wallhaven.ui.history
 
+import android.animation.AnimatorInflater
 import android.app.Dialog
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -46,14 +47,19 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) fab.hide() else fab.show()
+                if (dy > 0) fab.hide(true) else fab.show(true)
             }
         })
 
         refreshLayout.setOnRefreshListener { presenter.refreshImages() }
         refreshLayout.setOnLoadMoreListener { presenter.loadMoreImages() }
 
-        fab.setOnClickListener { recyclerView.smoothScrollToPosition(0) }
+        val animator = AnimatorInflater.loadAnimator(this,R.animator.animator_fab)
+        animator.setTarget(fab)
+        fab.setOnClickListener {
+            recyclerView.smoothScrollToPosition(0)
+            animator.start()
+        }
 
         loadingDialog = Dialog(this, R.style.dialog)
         val dialogView = LayoutInflater.from(this)
@@ -63,21 +69,12 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
         spinKit.setColor(ColorUtil.getInstance().getCurrentColor().second)
         loadingDialog.setCancelable(false)
 
-
         onChangeColor(ColorUtil.getInstance().getCurrentColor())
+
+        EventBus.getDefault().register(this)
 
         refreshLayout.autoRefresh()
 
-    }
-
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -136,10 +133,14 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
     private fun onChangeColor(color: Pair<String, Int>) {
         StatusBarUtil.setColorNoTranslucent(this, color.second)
         toolBar.setBackgroundColor(color.second)
-        fab.backgroundTintList = ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
-        )
+        fab.colorNormal = color.second
+        fab.colorPressed = color.second
         footer.setAnimatingColor(color.second)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

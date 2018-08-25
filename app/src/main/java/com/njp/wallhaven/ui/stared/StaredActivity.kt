@@ -1,5 +1,6 @@
 package com.njp.wallhaven.ui.stared
 
+import android.animation.AnimatorInflater
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
@@ -38,30 +39,28 @@ class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), Sta
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) fab.hide() else fab.show()
+                if (dy > 0) fab.hide(true) else fab.show(true)
             }
         })
 
         refreshLayout.setOnRefreshListener { presenter.refreshImages() }
         refreshLayout.setOnLoadMoreListener { presenter.loadMoreImages() }
 
-        fab.setOnClickListener { recyclerView.smoothScrollToPosition(0) }
+        val animator = AnimatorInflater.loadAnimator(this,R.animator.animator_fab)
+        animator.setTarget(fab)
+        fab.setOnClickListener {
+            recyclerView.smoothScrollToPosition(0)
+            animator.start()
+        }
 
         onChangeColor(ColorUtil.getInstance().getCurrentColor())
+
+        EventBus.getDefault().register(this)
 
         refreshLayout.autoRefresh()
 
     }
 
-    override fun onStart() {
-        super.onStart()
-        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        EventBus.getDefault().unregister(this)
-    }
 
     override fun onRefreshImages(images: List<SimpleImageInfo>) {
         adapter.setData(images)
@@ -91,11 +90,15 @@ class StaredActivity : BaseActivity<StaredContract.View, StaredPresenter>(), Sta
     private fun onChangeColor(color: Pair<String, Int>) {
         StatusBarUtil.setColorNoTranslucent(this, color.second)
         toolBar.setBackgroundColor(color.second)
-        fab.backgroundTintList = ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_enabled)), intArrayOf(color.second)
-        )
+        fab.colorPressed = color.second
+        fab.colorNormal = color.second
         footer.setAnimatingColor(color.second)
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
