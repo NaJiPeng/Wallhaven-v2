@@ -44,6 +44,17 @@ object NetworkInstance {
                 @Path("id") id: Int
         ): Observable<ResponseBody>
 
+        @GET("search")
+        fun searchByText(
+                @Query("q") q: String,
+                @Query("ratios") ratios: String,
+                @Query("colors") colors: String,
+                @Query("sorting") sorting: String,
+                @Query("topRange") topRange: String,
+                @Query("page") page: Int
+
+        ): Observable<ResponseBody>
+
 
     }
 

@@ -44,10 +44,15 @@
             android:name=".ui.history.HistoryActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.tag.TagActivity"
-            android:theme="@style/Tag"
+        <activity
+            android:name=".ui.tag.TagActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/Tag" />
+        <activity
+            android:name=".ui.search.text.TextSearchActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

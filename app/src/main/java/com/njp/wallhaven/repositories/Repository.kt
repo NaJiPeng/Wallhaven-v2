@@ -257,7 +257,7 @@ class Repository private constructor() {
     /**
      * 取消收藏Tag
      */
-    fun unStarTag(tag: Tag){
+    fun unStarTag(tag: Tag) {
         tag.delete()
     }
 
@@ -266,4 +266,29 @@ class Repository private constructor() {
      */
     fun isTagStared(tag: Tag) = tag.exists()
 
+    /**
+     * 根据关键字查找图片
+     */
+    fun searchByText(
+            q: String,
+            ratios: String,
+            colors: String,
+            sorting: String,
+            topRange: String,
+            page: Int
+    ): Observable<List<SimpleImageInfo>> {
+        return service.searchByText(q, ratios, colors, sorting, topRange, page).map {
+            val doc = Jsoup.parse(it.string())
+            val images = doc.select("#thumbs figure")
+                    .map { element ->
+                        val id = element.attr("data-wallpaper-id").toInt()
+                        val url = element.select("img")[0].attr("data-src")
+                        return@map SimpleImageInfo().apply {
+                            this.id = id
+                            this.url = url
+                        }
+                    }
+            return@map images
+        }
+    }
 }

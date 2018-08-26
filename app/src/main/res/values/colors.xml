@@ -43,4 +43,6 @@
 
     <color name="colorAccent">#b4ffffff</color>
 
+    <color name="mask_color">#88888888</color>
+
 </resources>

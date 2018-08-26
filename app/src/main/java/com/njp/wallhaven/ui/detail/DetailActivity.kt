@@ -69,8 +69,11 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().postSticky(ScrollToEvent(current, true))
         ActivityController.getInstance().remove(this)
+    }
+
+    fun postMessage(){
+        EventBus.getDefault().postSticky(ScrollToEvent(current, true))
     }
 
 

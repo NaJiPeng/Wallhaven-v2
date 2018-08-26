@@ -71,8 +71,6 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
 
         onChangeColor(ColorUtil.getInstance().getCurrentColor())
 
-        EventBus.getDefault().register(this)
-
         refreshLayout.autoRefresh()
 
     }
@@ -138,8 +136,13 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
         footer.setAnimatingColor(color.second)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
         EventBus.getDefault().unregister(this)
     }
 

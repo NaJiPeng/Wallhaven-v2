@@ -61,7 +61,6 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
             refreshLayout.autoRefresh()
         }
 
-        EventBus.getDefault().register(this)
         onChangeSkin(ColorUtil.getInstance().getCurrentColor())
 
         return root
@@ -94,8 +93,13 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
         refreshLayout.setEnableLoadMore(false)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
         EventBus.getDefault().unregister(this)
     }
 

@@ -14,6 +14,7 @@ import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseActivity
 import com.njp.wallhaven.repositories.bean.Tag
 import com.njp.wallhaven.repositories.bean.TagImageInfo
+import com.njp.wallhaven.ui.search.text.TextSearchActivity
 import com.njp.wallhaven.utils.ActivityController
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.ScrollToEvent
@@ -86,8 +87,8 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
         val animatorSearch = AnimatorInflater.loadAnimator(this, R.animator.animator_fab)
         animatorSearch.setTarget(fabSearch)
         fabSearch.setOnClickListener {
-            //TODO
             animatorSearch.start()
+            TextSearchActivity.actionStart(this, "id:${tag.id}")
         }
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)

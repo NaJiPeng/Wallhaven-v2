@@ -22,7 +22,9 @@ class ActivityController private constructor() {
     private var preDetailSign = false
 
     fun add(activity: Activity) {
-        check()
+        if (activities.size >= 5) {
+            activities.first().finish()
+        }
         activities.add(activity)
         if (activity is DetailActivity) {
             preDetailSign = false
@@ -30,16 +32,11 @@ class ActivityController private constructor() {
     }
 
     fun remove(activity: Activity) {
-        activities.remove(activity)
         if (activity is DetailActivity && !preDetailSign) {
             CommonDataHolder.removeData()
+            activity.postMessage()
         }
-    }
-
-    private fun check() {
-        if (activities.size >= 5) {
-            activities.first().finish()
-        }
+        activities.remove(activity)
     }
 
     fun clearDetail() {

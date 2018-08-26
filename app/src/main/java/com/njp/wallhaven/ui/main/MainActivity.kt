@@ -46,13 +46,12 @@ class MainActivity : AppCompatActivity() {
         viewPager.offscreenPageLimit = 3
         tabLayout.setupWithViewPager(viewPager)
 
-        val animator = AnimatorInflater.loadAnimator(this,R.animator.animator_fab)
+        val animator = AnimatorInflater.loadAnimator(this, R.animator.animator_fab)
         animator.setTarget(fab)
         fab.setOnClickListener {
             animator.start()
             EventBus.getDefault().post(ScrollToEvent(0, true))
         }
-        EventBus.getDefault().register(this)
 
         initBottomSheet()
         toolBar.setNavigationOnClickListener {
@@ -97,9 +96,18 @@ class MainActivity : AppCompatActivity() {
         moveTaskToBack(true)
     }
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
 
 
-        @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     fun onScrollEvent(event: ScrollEvent) {
         when (event) {
             ScrollEvent.EVENT_SCROLL_UP -> fab.show(true)
@@ -114,11 +122,6 @@ class MainActivity : AppCompatActivity() {
         tabLayout.setBackgroundColor(color.second)
         fab.colorNormal = color.second
         fab.colorPressed = color.second
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        EventBus.getDefault().unregister(this)
     }
 
 }
