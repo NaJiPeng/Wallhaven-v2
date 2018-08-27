@@ -14,7 +14,6 @@ import com.njp.wallhaven.utils.CommonDataHolder
 import com.njp.wallhaven.utils.ScrollToEvent
 import kotlinx.android.synthetic.main.activity_detail.*
 import org.greenrobot.eventbus.EventBus
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -34,8 +33,6 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private var current: Int = 0
-    private val today = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(Date())
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +42,7 @@ class DetailActivity : AppCompatActivity() {
         current = intent.getIntExtra("current", 0)
 
         viewPager.adapter = DetailImagesAdapter(supportFragmentManager, CommonDataHolder.getSimpleData())
-        Repository.getInstance().addHistory(CommonDataHolder.getImage(current)!!, today)
+        Repository.getInstance().addHistory(CommonDataHolder.getImage(current)!!, System.currentTimeMillis())
         viewPager.currentItem = current
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(p0: Int) {
@@ -56,7 +53,7 @@ class DetailActivity : AppCompatActivity() {
 
             override fun onPageSelected(p0: Int) {
                 current = p0
-                Repository.getInstance().addHistory(CommonDataHolder.getImage(p0)!!, today)
+                Repository.getInstance().addHistory(CommonDataHolder.getImage(p0)!!, System.currentTimeMillis())
             }
 
         })

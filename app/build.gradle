@@ -33,6 +33,10 @@ allprojects {
     }
 }
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -85,4 +89,6 @@ dependencies {
     implementation 'com.github.clans:fab:1.6.4'
 
     implementation 'com.github.dongjunkun:DropDownMenu:1.0.4'
+
+    implementation 'com.zhihu.android:matisse:0.5.2-beta2'
 }

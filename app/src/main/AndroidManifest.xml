@@ -53,6 +53,7 @@
             android:name=".ui.search.text.TextSearchActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.search.start.StartSearchActivity"></activity>
     </application>
 
 </manifest>

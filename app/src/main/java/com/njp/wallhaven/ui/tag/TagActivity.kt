@@ -75,11 +75,11 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
             animatorStar.start()
             if (presenter.isTagStared(tag)) {
                 presenter.unStarTag(tag)
-                ToastUtil.show("已取消收藏")
+                ToastUtil.show("已取消收藏标签")
                 fabStar.setImageResource(R.drawable.ic_stared_false)
             } else {
                 presenter.starTag(tag)
-                ToastUtil.show("已收藏")
+                ToastUtil.show("已收藏标签")
 
                 fabStar.setImageResource(R.drawable.ic_stared)
             }

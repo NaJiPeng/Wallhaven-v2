@@ -4,7 +4,8 @@ import com.njp.wallhaven.repositories.bean.*
 import com.njp.wallhaven.repositories.network.NetworkInstance
 import com.njp.wallhaven.repositories.network.NetworkInstance.retrofit
 import com.raizlabs.android.dbflow.kotlinextensions.and
-import com.raizlabs.android.dbflow.kotlinextensions.whereExists
+import com.raizlabs.android.dbflow.kotlinextensions.exists
+import com.raizlabs.android.dbflow.kotlinextensions.save
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import io.reactivex.Observable
 import org.jsoup.Jsoup
@@ -165,6 +166,7 @@ class Repository private constructor() {
         return SQLite.select()
                 .from(SimpleImageInfo::class.java)
                 .where(SimpleImageInfo_Table.isStared.eq(true))
+                .orderBy(SimpleImageInfo_Table.time, false)
                 .limit(24)
                 .offset(page * 24)
                 .queryList()
@@ -173,19 +175,19 @@ class Repository private constructor() {
     /**
      * 添加浏览记录
      */
-    fun addHistory(image: SimpleImageInfo, date: String) {
+    fun addHistory(image: SimpleImageInfo, time: Long) {
         if (image.exists()) {
             SQLite.select()
                     .from(SimpleImageInfo::class.java)
                     .where(SimpleImageInfo_Table.id.eq(image.id))
                     .querySingle()?.apply {
                         this.isHistory = true
-                        this.date = date
+                        this.time = time
                         this.save()
                     }
         } else {
             image.isHistory = true
-            image.date = date
+            image.time = time
             image.save()
         }
     }
@@ -197,7 +199,7 @@ class Repository private constructor() {
         return SQLite.select()
                 .from(SimpleImageInfo::class.java)
                 .where(SimpleImageInfo_Table.isHistory.eq(true))
-                .orderBy(SimpleImageInfo_Table.date, false)
+                .orderBy(SimpleImageInfo_Table.time, false)
                 .limit(24)
                 .offset(page * 24)
                 .queryList()
@@ -267,6 +269,15 @@ class Repository private constructor() {
     fun isTagStared(tag: Tag) = tag.exists()
 
     /**
+     * 获取收藏tag列表
+     */
+    fun getTags(): List<Tag> {
+        return SQLite.select()
+                .from(Tag::class.java)
+                .queryList()
+    }
+
+    /**
      * 根据关键字查找图片
      */
     fun searchByText(
@@ -291,4 +302,13 @@ class Repository private constructor() {
             return@map images
         }
     }
+
+    /**
+     * 保存搜索历史
+     */
+    fun saveHistory(history: History) {
+        history.save()
+    }
+
+
 }

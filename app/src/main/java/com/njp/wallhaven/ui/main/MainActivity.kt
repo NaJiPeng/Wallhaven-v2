@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.view.View
 import com.njp.wallhaven.adapter.BottomSheetAdapter
 import com.njp.wallhaven.ui.history.HistoryActivity
+import com.njp.wallhaven.ui.search.start.StartSearchActivity
 import com.njp.wallhaven.ui.stared.StaredActivity
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.SPUtil
@@ -51,6 +52,10 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener {
             animator.start()
             EventBus.getDefault().post(ScrollToEvent(0, true))
+        }
+
+        textSearch.setOnClickListener {
+            startActivity(Intent(this, StartSearchActivity::class.java))
         }
 
         initBottomSheet()

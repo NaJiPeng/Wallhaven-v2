@@ -34,6 +34,10 @@ class SplashActivity : BaseActivity<SplashContract.View, SplashPresenter>(), Spl
 
     }
 
+    override fun onBackPressed() {
+        moveTaskToBack(true)
+    }
+
     override fun onSplashImage(imageInfo: SimpleImageInfo?) {
         Glide.with(this)
                 .load(imageInfo?.url ?: R.drawable.splash_backgroung)

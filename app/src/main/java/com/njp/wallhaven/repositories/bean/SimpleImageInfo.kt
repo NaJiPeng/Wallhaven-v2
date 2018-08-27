@@ -17,9 +17,9 @@ data class SimpleImageInfo(
         @Column var isSPlash: Boolean = false,
         @Column var isHistory: Boolean = false,
         @Column var isStared: Boolean = false,
-        @Column var date: String = ""
+        @Column var time: Long = 0
 ) : BaseModel() {
-    fun selfCheck(){
+    fun selfCheck() {
         if (!isSPlash && !isStared && !isHistory) delete()
     }
 }

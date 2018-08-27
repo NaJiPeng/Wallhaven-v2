@@ -21,6 +21,7 @@ import com.njp.wallhaven.utils.ActivityController
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
+import com.raizlabs.android.dbflow.kotlinextensions.save
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
@@ -105,7 +106,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
         refreshLayout = contentView.findViewById(R.id.refreshLayout)
         footer = contentView.findViewById(R.id.footer)
 
-        val tabs = listOf("宽高比例", "颜色", "相关性", "时间限制")
+        val tabs = listOf("宽高比例", "颜色", "相关度", "热门时间")
 
         val recyclerViewRatio = LayoutInflater.from(this)
                 .inflate(R.layout.drop_down_menu, dropDownMenu, false) as RecyclerView
@@ -128,7 +129,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                 .inflate(R.layout.drop_down_menu, dropDownMenu, false) as RecyclerView
         recyclerViewColors.layoutManager = GridLayoutManager(this, 5)
         val colorList = listOf(
-                "eeeeee", "660000", "990000", "cc0000", "cc3333", "ea4c88",
+                "00000000", "660000", "990000", "cc0000", "cc3333", "ea4c88",
                 "993399", "663399", "333399", "0066cc", "0099cc", "66cccc",
                 "77cc33", "669900", "336600", "666600", "999900", "cccc33",
                 "ffff00", "ffcc33", "ff9900", "ff6600", "cc6633", "996633",
@@ -152,7 +153,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                 .inflate(R.layout.drop_down_menu, dropDownMenu, false) as RecyclerView
         recyclerViewSorting.layoutManager = GridLayoutManager(this, 5)
         val sortingList = listOf("relevance", "random", "date_added", "views", "favorites", "toplist")
-        val sortingTitles = listOf("相关性", "随机", "最新", "点击", "收藏", "最热")
+        val sortingTitles = listOf("相关度", "随机", "最新", "点击量", "收藏量", "热门")
         recyclerViewSorting.adapter = TextDropMenuAdapter(
                 sortingTitles,
                 ColorUtil.getInstance().getCurrentColor().second
@@ -178,9 +179,11 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                 3
         ) { position ->
             val range = topRangeList[position]
-            if (topRange != range && sorting == "toplist") {
+            if (topRange != range) {
                 topRange = range
-                refreshLayout.autoRefresh()
+                if (sorting == "toplist") {
+                    refreshLayout.autoRefresh()
+                }
             }
             dropDownMenu.closeMenu()
         }
@@ -197,6 +200,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
         val item = menu?.findItem(R.id.search)
         val searchView = MenuItemCompat.getActionView(item) as SearchView
         searchView.isSubmitButtonEnabled = true
+        searchView.queryHint = "搜索(建议English)"
         searchView.setOnQueryTextListener(
                 object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(p0: String?): Boolean {
@@ -207,6 +211,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                         searchView.onActionViewCollapsed()
                         q = p0 ?: ""
                         title = q
+                        presenter.saveHistory(q)
                         adapter.clear()
                         refreshLayout.autoRefresh()
                         return true
