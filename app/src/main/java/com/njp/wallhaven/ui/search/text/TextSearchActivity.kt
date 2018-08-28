@@ -44,7 +44,6 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
             val intent = Intent(context, TextSearchActivity::class.java)
             intent.putExtra("q", q)
             context.startActivity(intent)
-            Repository.getInstance().saveHistory(History(q, System.currentTimeMillis()))
         }
 
         fun actionStart(context: Context, tag: Tag) {

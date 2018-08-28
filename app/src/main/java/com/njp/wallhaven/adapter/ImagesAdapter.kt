@@ -48,7 +48,10 @@ class ImagesAdapter : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
         val image = images[position]
         Glide.with(viewHolder.itemView.context)
                 .load(image.url)
-                .apply(RequestOptions().centerCrop())
+                .apply(RequestOptions().apply {
+                    centerCrop()
+                    placeholder(R.drawable.ic_holder)
+                })
                 .into(viewHolder.image)
         viewHolder.itemView.setOnClickListener { _ ->
             DetailActivity.actionStart(viewHolder.itemView.context, images, position)
