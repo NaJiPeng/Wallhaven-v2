@@ -16,7 +16,10 @@ import com.njp.wallhaven.adapter.ColorDropMenuAdpter
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.adapter.TextDropMenuAdapter
 import com.njp.wallhaven.base.BaseActivity
+import com.njp.wallhaven.repositories.Repository
+import com.njp.wallhaven.repositories.bean.History
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
+import com.njp.wallhaven.repositories.bean.Tag
 import com.njp.wallhaven.utils.ActivityController
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.ScrollToEvent
@@ -41,6 +44,14 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
             val intent = Intent(context, TextSearchActivity::class.java)
             intent.putExtra("q", q)
             context.startActivity(intent)
+            Repository.getInstance().saveHistory(History(q, System.currentTimeMillis()))
+        }
+
+        fun actionStart(context: Context, tag: Tag) {
+            val intent = Intent(context, TextSearchActivity::class.java)
+            intent.putExtra("q", "id:${tag.id}")
+            intent.putExtra("title", tag.name)
+            context.startActivity(intent)
         }
     }
 
@@ -62,11 +73,11 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
         setP(TextSearchPresenter(this))
 
         q = intent.getStringExtra("q") ?: ""
+        title = intent.getStringExtra("title") ?: q
 
         setSupportActionBar(toolBar)
         toolBar.setNavigationIcon(R.drawable.ic_back)
         toolBar.setNavigationOnClickListener { onBackPressed() }
-        title = q
 
         setDropDownMenu()
 

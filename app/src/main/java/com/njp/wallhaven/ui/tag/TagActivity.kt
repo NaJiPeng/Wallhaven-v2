@@ -88,7 +88,7 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
         animatorSearch.setTarget(fabSearch)
         fabSearch.setOnClickListener {
             animatorSearch.start()
-            TextSearchActivity.actionStart(this, "id:${tag.id}")
+            TextSearchActivity.actionStart(this, tag)
         }
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)

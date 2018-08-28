@@ -28,10 +28,11 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     companion object {
         fun create(path: String) = MainFragment().apply {
-            this.setP(MainPresenter(this,path))
+            this.path = path
         }
     }
 
+    private var path: String = "random"
     private val adapter = ImagesAdapter()
     private lateinit var recyclerView: RecyclerView
     private lateinit var refreshLayout: SmartRefreshLayout
@@ -39,6 +40,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
 
     override fun createView(inflater: LayoutInflater, container: ViewGroup): View {
         val root = inflater.inflate(R.layout.fragment_main, container, false)
+        setP(MainPresenter(this, path))
 
         recyclerView = root.findViewById(R.id.recyclerView)
         refreshLayout = root.findViewById(R.id.refreshLayout)
