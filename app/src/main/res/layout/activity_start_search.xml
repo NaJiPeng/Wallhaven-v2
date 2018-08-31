@@ -9,22 +9,243 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <android.support.v7.widget.Toolbar
+            android:id="@+id/toolBar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/blue"
+            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar">
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_width="wrap_content"
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="2dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/white">
+
+                    <LinearLayout
+                        android:id="@+id/layoutImageSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_image_scan" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="以图搜图"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/white">
+
+                    <LinearLayout
+                        android:id="@+id/layoutCameraSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_image_camera" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="拍照搜图"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:text="已收藏标签"
+                        android:textColor="@android:color/black"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/textExpansionTags"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="8dp"
+                        android:text="展开"
+                        android:textSize="15sp"
+                        android:visibility="invisible" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray" />
+
+                <android.support.v4.widget.NestedScrollView
+                    android:id="@+id/scrollViewTags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <android.support.design.chip.ChipGroup
+                            android:id="@+id/chipGroupTags"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            app:chipSpacingHorizontal="10dp"
+                            app:chipSpacingVertical="5dp">
+
+                        </android.support.design.chip.ChipGroup>
+                    </LinearLayout>
+                </android.support.v4.widget.NestedScrollView>
 
 
+            </LinearLayout>
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/layoutHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/white"
+                android:orientation="vertical">
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:text="搜索历史"
+                        android:textColor="@android:color/black"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/textExpansionHistory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="8dp"
+                        android:text="展开"
+                        android:textSize="15sp"
+                        android:visibility="invisible" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray" />
+
+                <android.support.v4.widget.NestedScrollView
+                    android:id="@+id/scrollViewHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <android.support.design.chip.ChipGroup
+                            android:id="@+id/chipGroupHistory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            app:chipSpacingHorizontal="10dp"
+                            app:chipSpacingVertical="5dp">
+
+                        </android.support.design.chip.ChipGroup>
+                    </LinearLayout>
+                </android.support.v4.widget.NestedScrollView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray" />
+
+                <TextView
+                    android:id="@+id/textClearHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:gravity="center"
+                    android:text="清除搜索记录"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

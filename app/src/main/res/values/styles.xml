@@ -2,10 +2,23 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimary">@android:color/white</item>
         <item name="colorPrimaryDark">@android:color/black</item>
-        <item name="colorAccent">@color/blue</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="buttonBarPositiveButtonStyle">@style/positiveBtnStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/negativeBtnStyle</item>
     </style>
+
+    <!--确定按钮样式-->
+    <style name="positiveBtnStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <!--取消按钮样式-->
+    <style name="negativeBtnStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
 
     <style name="Splash" parent="AppTheme">
         <item name="android:windowFullscreen">true</item>
@@ -25,6 +38,14 @@
         <item name="android:backgroundDimEnabled">true</item><!--模糊-->
     </style>
 
-    <style name="Tag" parent="AppTheme"/>
+    <style name="Tag" parent="AppTheme" />
+
+    <style name="StartSearch" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorAccent">@android:color/white</item>
+        <item name="buttonBarPositiveButtonStyle">@style/positiveBtnStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/negativeBtnStyle</item>
+    </style>
 
 </resources>

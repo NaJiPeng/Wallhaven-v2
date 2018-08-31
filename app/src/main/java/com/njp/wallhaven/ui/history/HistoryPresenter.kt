@@ -9,12 +9,12 @@ class HistoryPresenter(view: HistoryContract.View) : HistoryContract.Presenter, 
 
     override fun refreshImages() {
         page = 0
-        val images = Repository.getInstance().getHistory(0)
+        val images = Repository.getInstance().getHistoryImages(0)
         if (images.isNotEmpty()) view?.onRefreshImages(images) else view?.onNoImages()
     }
 
     override fun loadMoreImages() {
-        val images = Repository.getInstance().getHistory(++page)
+        val images = Repository.getInstance().getHistoryImages(++page)
         if (images.isNotEmpty()) {
             view?.onLoadMoreImages(images)
         } else {
@@ -24,7 +24,7 @@ class HistoryPresenter(view: HistoryContract.View) : HistoryContract.Presenter, 
     }
 
     override fun clearHistoryImages() {
-        Repository.getInstance().clearHistory()
+        Repository.getInstance().clearHistoryImages()
     }
 
 }

@@ -1,14 +1,13 @@
 package com.njp.wallhaven.repositories.network
 
 import io.reactivex.Observable
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 object NetworkInstance {
 
@@ -55,6 +54,11 @@ object NetworkInstance {
 
         ): Observable<ResponseBody>
 
+        @Multipart
+        @POST("search")
+        fun searchByImage(
+                @Part image: MultipartBody.Part
+        ): Observable<ResponseBody>
 
     }
 

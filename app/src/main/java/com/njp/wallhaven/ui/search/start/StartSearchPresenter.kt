@@ -1,29 +1,36 @@
 package com.njp.wallhaven.ui.search.start
 
-import android.nfc.Tag
 import com.njp.wallhaven.base.BasePresenter
+import com.njp.wallhaven.repositories.Repository
 import com.njp.wallhaven.repositories.bean.History
+import com.njp.wallhaven.repositories.bean.Tag
 
-class StartSearchPresenter(view: StartSearchContract.View):BasePresenter<StartSearchContract.View>(view),StartSearchContract.Presenter {
+class StartSearchPresenter(view: StartSearchContract.View) : BasePresenter<StartSearchContract.View>(view), StartSearchContract.Presenter {
+
+    override fun saveHistory(string: String) {
+        Repository.getInstance().saveHistory(History(string, System.currentTimeMillis()))
+    }
 
     override fun getStaredTags() {
-
+        val tags = Repository.getInstance().getTags()
+        view?.onGetStaredTags(tags)
     }
 
     override fun getSearchHistory() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val historyList = Repository.getInstance().getSearchHistory()
+        view?.onGetSearchHistory(historyList)
     }
 
     override fun deleteTag(tag: Tag) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Repository.getInstance().unStarTag(tag)
     }
 
     override fun deleteHistory(history: History) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Repository.getInstance().deleteHistory(history)
     }
 
     override fun clearHistory() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Repository.getInstance().clearHistory()
     }
 
 

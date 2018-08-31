@@ -4,11 +4,15 @@ import com.njp.wallhaven.repositories.bean.*
 import com.njp.wallhaven.repositories.network.NetworkInstance
 import com.njp.wallhaven.repositories.network.NetworkInstance.retrofit
 import com.raizlabs.android.dbflow.kotlinextensions.and
-import com.raizlabs.android.dbflow.kotlinextensions.exists
+import com.raizlabs.android.dbflow.kotlinextensions.delete
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import io.reactivex.Observable
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import org.jsoup.Jsoup
+import java.io.File
 
 /**
  * 应用数据交互唯一接口
@@ -195,7 +199,7 @@ class Repository private constructor() {
     /**
      * 获取历史记录列表
      */
-    fun getHistory(page: Int): List<SimpleImageInfo> {
+    fun getHistoryImages(page: Int): List<SimpleImageInfo> {
         return SQLite.select()
                 .from(SimpleImageInfo::class.java)
                 .where(SimpleImageInfo_Table.isHistory.eq(true))
@@ -208,7 +212,7 @@ class Repository private constructor() {
     /**
      * 清空浏览记录
      */
-    fun clearHistory() {
+    fun clearHistoryImages() {
         SQLite.select()
                 .from(SimpleImageInfo::class.java)
                 .where(SimpleImageInfo_Table.isHistory.eq(true))
@@ -308,6 +312,42 @@ class Repository private constructor() {
      */
     fun saveHistory(history: History) {
         history.save()
+    }
+
+    /**
+     * 获取搜索历史记录
+     */
+    fun getSearchHistory(): List<History> {
+        return SQLite.select()
+                .from(History::class.java)
+                .orderBy(History_Table.time, false)
+                .queryList()
+    }
+
+    /**
+     * 删除搜索记录
+     */
+    fun deleteHistory(history: History) {
+        history.delete()
+    }
+
+    /**
+     * 清除搜索记录
+     */
+    fun clearHistory() {
+        SQLite.select()
+                .from(History::class.java)
+                .queryList()
+                .forEach { it.delete() }
+    }
+
+    /**
+     * 以图搜图
+     */
+    fun searchByImage(image: File) {
+        val body = RequestBody.create(MediaType.parse("multipart/form-data"), image)
+        val part = MultipartBody.Part.createFormData("search_image", image.name, body)
+        service.searchByImage(part)
     }
 
 

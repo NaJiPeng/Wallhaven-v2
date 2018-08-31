@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".base.MyApplication"
@@ -16,6 +17,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.njp.wallhaven.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_path" />
+        </provider>
+
         <activity
             android:name=".ui.splash.SplashActivity"
             android:launchMode="singleTop"
@@ -53,7 +64,12 @@
             android:name=".ui.search.text.TextSearchActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.search.start.StartSearchActivity"></activity>
+        <activity
+            android:name=".ui.search.start.StartSearchActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/StartSearch" />
+        <activity android:name=".ui.search.image.ImageSearchActivity"></activity>
     </application>
 
 </manifest>
