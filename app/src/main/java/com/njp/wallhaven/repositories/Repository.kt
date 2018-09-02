@@ -60,7 +60,7 @@ class Repository private constructor() {
         return service.getImages(path, page)
                 .map {
                     val doc = Jsoup.parse(it.string())
-                    val elements = doc.select("#thumbs figure")
+                    val elements = doc.select("#thumbs figure.thumb-sfw")
                     val images = elements.map { element ->
                         val url = element.getElementsByTag("img")[0].attr("data-src")
                         val id = element.attr("data-wallpaper-id").toInt()
@@ -237,7 +237,7 @@ class Repository private constructor() {
                     val imageId = titleImage.select("a")[0].attr("href")
                             .split("/").last().toInt()
                     val imageUrl = "https://alpha.wallhaven.cc/wallpapers/thumb/small/th-$imageId.jpg"
-                    val images = doc.select("#tag-thumbs figure")
+                    val images = doc.select("#tag-thumbs figure.thumb-sfw")
                             .map { element ->
                                 val id = element.attr("data-wallpaper-id").toInt()
                                 val url = element.select("img")[0].attr("data-src")
@@ -294,7 +294,7 @@ class Repository private constructor() {
     ): Observable<List<SimpleImageInfo>> {
         return service.searchByText(q, ratios, colors, sorting, topRange, page).map {
             val doc = Jsoup.parse(it.string())
-            val images = doc.select("#thumbs figure")
+            val images = doc.select("#thumbs figure.thumb-sfw")
                     .map { element ->
                         val id = element.attr("data-wallpaper-id").toInt()
                         val url = element.select("img")[0].attr("data-src")
@@ -344,10 +344,22 @@ class Repository private constructor() {
     /**
      * 以图搜图
      */
-    fun searchByImage(image: File) {
+    fun searchByImage(image: File): Observable<List<SimpleImageInfo>> {
         val body = RequestBody.create(MediaType.parse("multipart/form-data"), image)
         val part = MultipartBody.Part.createFormData("search_image", image.name, body)
-        service.searchByImage(part)
+        return service.searchByImage(part).map {
+            val doc = Jsoup.parse(it.string())
+            val images = doc.select("#thumbs figure.thumb-sfw")
+                    .map { element ->
+                        val id = element.attr("data-wallpaper-id").toInt()
+                        val url = element.select("img")[0].attr("data-src")
+                        return@map SimpleImageInfo().apply {
+                            this.id = id
+                            this.url = url
+                        }
+                    }
+            return@map images
+        }
     }
 
 

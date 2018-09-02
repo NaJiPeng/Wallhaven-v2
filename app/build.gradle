@@ -91,4 +91,7 @@ dependencies {
     implementation 'com.github.dongjunkun:DropDownMenu:1.0.4'
 
     implementation 'com.zhihu.android:matisse:0.5.2-beta2'
+
+    implementation 'id.zelory:compressor:2.1.0'
+
 }

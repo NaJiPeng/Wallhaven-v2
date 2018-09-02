@@ -36,7 +36,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
     }
 
     private lateinit var rxPermissions: RxPermissions
-    private val imagePath = "${Environment.getExternalStorageDirectory().path}/Wallhaven/temp"
+    private var path = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +48,6 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
         setSupportActionBar(toolBar)
         toolBar.setNavigationIcon(R.drawable.ic_back)
         toolBar.setNavigationOnClickListener { onBackPressed() }
-        title = "图片搜索"
 
         layoutImageSearch.setOnClickListener {
             rxPermissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -71,12 +70,18 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
                     .subscribe { granted ->
                         if (granted) {
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            val file = File(imagePath)
-                            file.mkdirs()
+                            val dir = File("${Environment.getExternalStorageDirectory().path}/Wallhaven/temp")
+                            if (!dir.exists()) {
+                                dir.mkdirs()
+                            } else if (dir.list().size >= 5) {
+                                File(dir.list()[0]).delete()
+                            }
+                            val file = File(dir, "temp-${System.currentTimeMillis()}.jpg")
+                            path = file.absolutePath
                             val uri = FileProvider.getUriForFile(
                                     this,
                                     "com.njp.wallhaven.fileprovider",
-                                    File(file, "temp.png")
+                                    file
                             )
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
                             startActivityForResult(intent, CODE_TAKE_PHOTO)
@@ -257,7 +262,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
             }
             CODE_TAKE_PHOTO -> {
                 if (resultCode == RESULT_OK) {
-                    ImageSearchActivity.actionStart(this, "$imagePath/temp.png")
+                    ImageSearchActivity.actionStart(this, path)
                 }
             }
         }

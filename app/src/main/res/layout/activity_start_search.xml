@@ -14,6 +14,7 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:title="图片搜索"
             android:background="@color/blue"
             android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar">
 
@@ -58,7 +59,7 @@
                             android:layout_width="35dp"
                             android:layout_height="35dp"
                             android:layout_marginLeft="10dp"
-                            android:src="@drawable/ic_image_scan" />
+                            android:src="@drawable/ic_image_scan_grey" />
 
                         <TextView
                             android:layout_width="0dp"

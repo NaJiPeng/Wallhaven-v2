@@ -24,7 +24,7 @@
                 android:background="@drawable/bg_search"
                 android:clickable="true"
                 android:drawableLeft="@drawable/ic_search_grey"
-                android:drawableRight="@drawable/ic_camera"
+                android:drawableRight="@drawable/ic_camera_grey"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:paddingLeft="8dp"
