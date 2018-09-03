@@ -16,6 +16,8 @@ class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.
         val images = Repository.getInstance().getSplashImagesFromDB()
         if (images.isNotEmpty()) {
             view?.onSplashImage(images[Random().nextInt(images.size)])
+        }else{
+            view?.onSplashImage(null)
         }
     }
 
