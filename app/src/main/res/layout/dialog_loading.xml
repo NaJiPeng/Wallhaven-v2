@@ -13,7 +13,7 @@
         style="@style/SpinKitView.Wave"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        app:SpinKit_Color="@android:color/white" />
+        app:SpinKit_Color="#b4ffffff" />
 
 
 </FrameLayout>

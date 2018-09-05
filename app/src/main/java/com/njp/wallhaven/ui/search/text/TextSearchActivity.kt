@@ -26,6 +26,7 @@ import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
 import com.raizlabs.android.dbflow.kotlinextensions.save
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
+import com.scwang.smartrefresh.layout.constant.RefreshState
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
 import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
@@ -130,7 +131,13 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
             dropDownMenu.setTabText(if (position == 0) tabs[0] else ratio)
             if (ratios != ratio) {
                 ratios = ratio
-                refreshLayout.autoRefresh()
+                if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
+                    presenter.disposeAll()
+                    adapter.clear()
+                    presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                } else {
+                    refreshLayout.autoRefresh()
+                }
             }
             dropDownMenu.closeMenu()
         }
@@ -153,7 +160,13 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
             val color = if (position == 0) "" else colorList[position]
             if (colors != color) {
                 colors = color
-                refreshLayout.autoRefresh()
+                if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
+                    presenter.disposeAll()
+                    adapter.clear()
+                    presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                } else {
+                    refreshLayout.autoRefresh()
+                }
             }
             dropDownMenu.closeMenu()
 
@@ -173,7 +186,13 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
             dropDownMenu.setTabText(sortTitle)
             if (sorting != sort) {
                 sorting = sort
-                refreshLayout.autoRefresh()
+                if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
+                    presenter.disposeAll()
+                    adapter.clear()
+                    presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                } else {
+                    refreshLayout.autoRefresh()
+                }
             }
             dropDownMenu.closeMenu()
         }
@@ -192,7 +211,13 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
             if (topRange != range) {
                 topRange = range
                 if (sorting == "toplist") {
-                    refreshLayout.autoRefresh()
+                    if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
+                        presenter.disposeAll()
+                        adapter.clear()
+                        presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                    } else {
+                        refreshLayout.autoRefresh()
+                    }
                 }
             }
             dropDownMenu.closeMenu()

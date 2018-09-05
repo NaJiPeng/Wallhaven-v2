@@ -1,6 +1,7 @@
 package com.njp.wallhaven.ui.detail
 
 import android.Manifest
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -27,8 +28,10 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 import java.io.File
 import android.graphics.Bitmap
 import android.net.Uri
+import com.github.ybq.android.spinkit.SpinKitView
 import com.njp.wallhaven.repositories.network.ProgressInterceptor
 import com.njp.wallhaven.ui.tag.TagActivity
+import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.CommonDataHolder
 import java.io.FileOutputStream
 
@@ -50,6 +53,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
     private var detailImageInfo: DetailImageInfo? = null
     private var bitmap: Bitmap? = null
     private lateinit var rxPermissions: RxPermissions
+    private lateinit var loadingDialog: Dialog
 
 
     override fun createView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -63,6 +67,13 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
         textIndicate.text = "$position/$size"
         photoView.maximumScale *= 2
         Glide.with(context!!).load(image.url).into(photoView)
+
+        loadingDialog = Dialog(context, R.style.dialog)
+        val dialogView = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_loading, null)
+        loadingDialog.setContentView(dialogView)
+        loadingDialog.setCancelable(false)
+
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(p0: View, p1: Float) {
@@ -110,6 +121,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                     .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .subscribe { granted ->
                         if (granted) {
+                            loadingDialog.show()
                             Thread {
                                 val path = File("${Environment.getExternalStorageDirectory().path}/Wallhaven")
                                 if (!path.exists()) {
@@ -124,6 +136,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                                 }
                                 activity?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(target)))
                                 activity?.runOnUiThread {
+                                    loadingDialog.dismiss()
                                     ToastUtil.show("已保存至${target.absoluteFile}")
                                 }
                             }.start()
