@@ -65,26 +65,21 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
                     }
         }
 
-        layoutCameraSearch.setOnClickListener {
+        layoutCameraSearch.setOnClickListener { _ ->
             rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .subscribe { granted ->
                         if (granted) {
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            val dir = File("${Environment.getExternalStorageDirectory().path}/Wallhaven/temp")
-                            if (!dir.exists()) {
-                                dir.mkdirs()
-                            } else if (dir.list().size >= 5) {
-                                File(dir.list()[0]).delete()
-                            }
-                            val file = File(dir, "temp-${System.currentTimeMillis()}.jpg")
+                            val file = UriUtil.getInstance().getTempFilePath()
                             path = file.absolutePath
-                            val uri = FileProvider.getUriForFile(
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(
                                     this,
                                     "com.njp.wallhaven.fileprovider",
                                     file
-                            )
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                            ))
                             startActivityForResult(intent, CODE_TAKE_PHOTO)
+                        }else {
+                            ToastUtil.show("未授权 T_T")
                         }
                     }
         }
@@ -256,7 +251,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
                     val list = Matisse.obtainResult(data)
                     ImageSearchActivity.actionStart(
                             this,
-                            UriToPathUtil.getInstance().getImageAbsolutePath(list[0])!!
+                            UriUtil.getInstance().getImageAbsolutePath(list[0])!!
                     )
                 }
             }

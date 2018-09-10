@@ -5,6 +5,7 @@ import android.animation.AnimatorInflater
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -16,20 +17,19 @@ import android.view.MenuItem
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.njp.wallhaven.R
-import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.base.BaseActivity
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
-import com.njp.wallhaven.utils.ColorUtil
-import com.njp.wallhaven.utils.Glide4Engine
-import com.njp.wallhaven.utils.ToastUtil
-import com.njp.wallhaven.utils.UriToPathUtil
+import com.njp.wallhaven.utils.*
 import com.tbruyelle.rxpermissions2.RxPermissions
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
 import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
 import kotlinx.android.synthetic.main.activity_image_search.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 
 
@@ -53,6 +53,7 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image_search)
+
         setP(ImageSearchPresenter(this))
         rxPermissions = RxPermissions(this)
 
@@ -61,6 +62,7 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
         setSupportActionBar(toolBar)
         toolBar.setNavigationIcon(R.drawable.ic_back)
         toolBar.setNavigationOnClickListener { onBackPressed() }
+        title = "以图搜图"
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.itemAnimator = FlipInTopXAnimator()
@@ -75,7 +77,7 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
         val animator = AnimatorInflater.loadAnimator(this, R.animator.animator_fab)
         animator.setTarget(fab)
         fab.setOnClickListener {
-            scrollView.smoothScrollTo(0, 0)
+            recyclerView.smoothScrollToPosition(0)
             animator.start()
         }
 
@@ -83,7 +85,7 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
             Glide.with(this)
                     .load(path)
                     .apply(RequestOptions().centerCrop())
-                    .into(imageYour)
+                    .into(imageUpload)
             adapter.clear()
             presenter.getImages(this, path)
         }
@@ -107,21 +109,16 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
                         .subscribe { granted ->
                             if (granted) {
                                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                val dir = File("${Environment.getExternalStorageDirectory().path}/Wallhaven/temp")
-                                if (!dir.exists()) {
-                                    dir.mkdirs()
-                                } else if (dir.listFiles().size >= 5) {
-                                    dir.listFiles().forEach { it.delete() }
-                                }
-                                val file = File(dir, "temp-${System.currentTimeMillis()}.jpg")
+                                val file = UriUtil.getInstance().getTempFilePath()
                                 cameraPath = file.absolutePath
-                                val uri = FileProvider.getUriForFile(
+                                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(
                                         this,
                                         "com.njp.wallhaven.fileprovider",
                                         file
-                                )
-                                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                                ))
                                 startActivityForResult(intent, CODE_TAKE_PHOTO)
+                            }else {
+                                ToastUtil.show("未授权 T_T")
                             }
                         }
             }
@@ -142,13 +139,6 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
             }
         }
         return true
-    }
-
-    private fun onChangeColor(color: Pair<String, Int>) {
-        StatusBarUtil.setColorNoTranslucent(this, color.second)
-        toolBar.setBackgroundColor(color.second)
-        fab.colorNormal = color.second
-        fab.colorPressed = color.second
     }
 
     override fun onGetImages(images: List<SimpleImageInfo>) {
@@ -172,7 +162,7 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
             CODE_CHOOSE -> {
                 if (resultCode == RESULT_OK) {
                     val list = Matisse.obtainResult(data)
-                    path = UriToPathUtil.getInstance().getImageAbsolutePath(list[0])!!
+                    path = UriUtil.getInstance().getImageAbsolutePath(list[0])!!
                     refreshLayout.autoRefresh()
                 }
             }
@@ -181,6 +171,35 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
                     path = cameraPath
                     refreshLayout.autoRefresh()
                 }
+            }
+        }
+    }
+
+    private fun onChangeColor(color: Pair<String, Int>) {
+        appBarLayout.setBackgroundColor(color.second)
+        collapsingLayout.setContentScrimColor(color.second)
+        collapsingLayout.statusBarScrim = ColorDrawable(color.second)
+        fab.colorNormal = color.second
+        fab.colorPressed = color.second
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onScrollToUp(event: ScrollToEvent) {
+        recyclerView.let {
+            if (event.isSmooth) {
+                it.smoothScrollToPosition(event.position)
+            } else {
+                it.scrollToPosition(event.position)
             }
         }
     }

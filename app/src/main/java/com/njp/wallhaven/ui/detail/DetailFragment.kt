@@ -1,7 +1,9 @@
 package com.njp.wallhaven.ui.detail
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.app.Dialog
+import android.app.WallpaperManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -28,11 +30,19 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 import java.io.File
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
+import android.widget.TextView
 import com.github.ybq.android.spinkit.SpinKitView
 import com.njp.wallhaven.repositories.network.ProgressInterceptor
 import com.njp.wallhaven.ui.tag.TagActivity
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.CommonDataHolder
+import com.njp.wallhaven.utils.UriUtil
+import com.yalantis.ucrop.UCrop
+import com.yalantis.ucrop.model.AspectRatio
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.FileOutputStream
 
 
@@ -42,7 +52,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
         fun create(image: SimpleImageInfo, size: Int, position: Int) = DetailFragment().apply {
             this.image = image
             this.size = size
-            this.position = position + 1
+            this.position = position
             setP(DetailPresenter(this))
         }
     }
@@ -64,7 +74,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
         super.onViewCreated(view, savedInstanceState)
         detailImageInfo = CommonDataHolder.getDetailData(position)
         rxPermissions = RxPermissions(this)
-        textIndicate.text = "$position/$size"
+        (textIndicate as TextView).text = "${position + 1}/$size"
         photoView.maximumScale *= 2
         Glide.with(context!!).load(image.url).into(photoView)
 
@@ -96,8 +106,11 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
             }
 
         })
+
         imageControl.setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
+
         photoView.setOnClickListener { activity?.finish() }
+
         imageStar.apply {
             if (presenter.isStared(image)) {
                 setImageResource(R.drawable.ic_stared)
@@ -105,6 +118,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                 setImageResource(R.drawable.ic_stared_false)
             }
         }
+
         imageStar.setOnClickListener {
             if (presenter.isStared(image)) {
                 presenter.unStarImage(image)
@@ -116,6 +130,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                 ToastUtil.show("已收藏")
             }
         }
+
         imageDownload.setOnClickListener {
             rxPermissions
                     .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -123,21 +138,12 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                         if (granted) {
                             loadingDialog.show()
                             Thread {
-                                val path = File("${Environment.getExternalStorageDirectory().path}/Wallhaven")
-                                if (!path.exists()) {
-                                    path.mkdirs()
-                                }
-                                val target = File(path, "wallhaven-${image.id}.png")
-                                val output = FileOutputStream(target)
-                                bitmap?.let { bitmap ->
-                                    output.use { target ->
-                                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, target)
-                                    }
-                                }
-                                activity?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(target)))
+                                val file = UriUtil.getInstance().getDownloadFilePath(image.id)
+                                saveImageToDisk(file)
+                                activity?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
                                 activity?.runOnUiThread {
                                     loadingDialog.dismiss()
-                                    ToastUtil.show("已保存至${target.absoluteFile}")
+                                    ToastUtil.show("已保存至${file.absoluteFile}")
                                 }
                             }.start()
                         } else {
@@ -145,10 +151,87 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                         }
                     }
         }
+
+        imageShare.setOnClickListener {
+            ToastUtil.show("此功能正在开发中...")
+        }
+
+        imageCrop.setOnClickListener { _ ->
+            activity?.let {
+                rxPermissions
+                        .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe { granted ->
+                            if (granted) {
+                                loadingDialog.show()
+                                val file = UriUtil.getInstance().getTempFilePath()
+                                Thread {
+                                    saveImageToDisk(file)
+                                    it.runOnUiThread {
+                                        UCrop
+                                                .of(
+                                                        Uri.fromFile(file),
+                                                        Uri.fromFile(UriUtil.getInstance().getTempFilePath())
+                                                )
+                                                .withOptions(UCrop.Options().apply {
+                                                    setCompressionQuality(100)
+
+                                                    val color = ColorUtil.getInstance().getCurrentColor()
+                                                    setStatusBarColor(color.second)
+                                                    setToolbarColor(color.second)
+                                                    setLogoColor(color.second)
+                                                    setActiveWidgetColor(color.second)
+
+                                                    setAspectRatioOptions(0,
+                                                            AspectRatio("1:1", 1f, 1f),
+                                                            AspectRatio("3:4", 3f, 4f),
+                                                            AspectRatio("2:3", 2f, 3f),
+                                                            AspectRatio("10:16", 10f, 16f),
+                                                            AspectRatio("9:16", 9f, 16f),
+                                                            AspectRatio("9:18", 9f, 18f)
+                                                    )
+
+                                                    setFreeStyleCropEnabled(true)
+                                                })
+                                                .start(it)
+                                        loadingDialog.dismiss()
+                                    }
+                                }.start()
+                            }else {
+                                ToastUtil.show("未授权 T_T")
+                            }
+                        }
+            }
+        }
+
+        imageScreen.setOnClickListener { _ ->
+            activity?.let {
+                loadingDialog.show()
+                Thread {
+                    WallpaperManager.getInstance(it).setBitmap(bitmap)
+                    it.runOnUiThread {
+                        loadingDialog.dismiss()
+                        ToastUtil.show("设置壁纸成功")
+                    }
+                }.start()
+            }
+
+        }
+
         if (detailImageInfo != null) {
             onGetDetailImageSuccess(detailImageInfo!!)
         } else {
             presenter.getDetailImage(image.id)
+        }
+
+        EventBus.getDefault().register(this)
+    }
+
+    private fun saveImageToDisk(file: File) {
+        val output = FileOutputStream(file)
+        bitmap?.let { bitmap ->
+            output.use { target ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, target)
+            }
         }
     }
 
@@ -161,9 +244,24 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
         ProgressInterceptor.addListener(detailImageInfo.url) { progress ->
             activity?.runOnUiThread { textProgress?.text = "$progress%" }
         }
+        loadImage(detailImageInfo.url)
+        (textResolution as TextView).text = detailImageInfo.resolution
+        detailImageInfo.tags.forEach { tag ->
+            chipGroup.addView(Chip(context).apply {
+                this.text = tag.name
+                this.setOnClickListener {
+                    TagActivity.actionStart(context, tag)
+                }
+            })
+        }
+        imageControl.visibility = View.VISIBLE
+    }
+
+
+    private fun loadImage(data: Any) {
         Glide.with(this)
                 .asBitmap()
-                .load(detailImageInfo.url)
+                .load(data)
                 .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                         if (userVisibleHint) ToastUtil.show("图片加载失败 >_<")
@@ -175,19 +273,20 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                         bitmap = resource
                         loadingLayout?.visibility = View.INVISIBLE
                         imageDownload?.visibility = View.VISIBLE
+                        imageScreen?.visibility = View.VISIBLE
+                        imageShare?.visibility = View.VISIBLE
+                        imageCrop?.visibility = View.VISIBLE
                         return false
                     }
                 }).into(photoView)
-        textResolution.text = detailImageInfo.resolution
-        detailImageInfo.tags.forEach { tag ->
-            chipGroup.addView(Chip(context).apply {
-                this.text = tag.name
-                this.setOnClickListener {
-                    TagActivity.actionStart(context,tag)
-                }
-            })
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun cropImageResult(uri: Pair<Int, Uri>) {
+        if (position == uri.first) {
+            loadImage(uri.second)
         }
-        imageControl.visibility = View.VISIBLE
     }
 
     override fun onGetDetailImageFail(msg: String) {

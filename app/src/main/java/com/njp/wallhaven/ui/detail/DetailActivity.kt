@@ -1,10 +1,13 @@
 package com.njp.wallhaven.ui.detail
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.view.ViewPager
+import android.util.Log
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.DetailImagesAdapter
 import com.njp.wallhaven.repositories.Repository
@@ -12,6 +15,7 @@ import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.utils.ActivityController
 import com.njp.wallhaven.utils.CommonDataHolder
 import com.njp.wallhaven.utils.ScrollToEvent
+import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_detail.*
 import org.greenrobot.eventbus.EventBus
 import java.util.*
@@ -69,8 +73,17 @@ class DetailActivity : AppCompatActivity() {
         ActivityController.getInstance().remove(this)
     }
 
-    fun postMessage(){
+    fun postMessage() {
         EventBus.getDefault().postSticky(ScrollToEvent(current, true))
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            UCrop.getOutput(data!!)?.let {
+                EventBus.getDefault().post(Pair(current, it))
+            }
+        }
     }
 
 

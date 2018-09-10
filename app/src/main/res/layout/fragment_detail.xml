@@ -26,8 +26,8 @@
             <com.github.ybq.android.spinkit.SpinKitView
                 style="@style/SpinKitView.Large.Circle"
                 android:layout_width="60dp"
-                app:SpinKit_Color="@color/colorAccent"
-                android:layout_height="60dp" />
+                android:layout_height="60dp"
+                app:SpinKit_Color="@color/colorAccent" />
 
             <TextView
                 android:id="@+id/textProgress"
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:background="#3c000000"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="50dp"
+        app:behavior_peekHeight="40dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
 
         <LinearLayout
@@ -55,12 +55,12 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:background="#14000000"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <me.grantland.widget.AutofitTextView
                     android:id="@+id/textIndicate"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -68,41 +68,72 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:textColor="#fff"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
-                <TextView
+                <me.grantland.widget.AutofitTextView
                     android:id="@+id/textResolution"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="2"
+                    android:layout_weight="2.5"
                     android:gravity="center"
+                    android:maxLines="1"
+                    android:singleLine="true"
                     android:textColor="#fff"
-                    android:textSize="15sp" />
+                    android:textSize="13sp" />
 
                 <ImageView
                     android:id="@+id/imageStar"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
                     android:src="@drawable/ic_stared_false" />
 
                 <ImageView
+                    android:id="@+id/imageCrop"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_crop"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:id="@+id/imageScreen"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_screen"
+                    android:visibility="invisible" />
+
+                <ImageView
                     android:id="@+id/imageDownload"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
                     android:src="@drawable/ic_download"
                     android:visibility="invisible" />
 
                 <ImageView
+                    android:id="@+id/imageShare"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_share"
+                    android:visibility="invisible" />
+
+                <ImageView
                     android:id="@+id/imageControl"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
                     android:src="@drawable/ic_up"
                     android:visibility="invisible" />
 

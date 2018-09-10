@@ -4,7 +4,6 @@ import android.annotation.TargetApi
 import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
-import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
@@ -12,21 +11,39 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import java.io.File
 
-class UriToPathUtil private constructor() {
+class UriUtil private constructor() {
 
     companion object {
-        private var instance: UriToPathUtil? = null
+        private var instance: UriUtil? = null
         private lateinit var context: Application
         fun init(context: Application) {
             this.context = context
         }
 
-        fun getInstance(): UriToPathUtil {
+        fun getInstance(): UriUtil {
             if (instance == null) {
-                instance = UriToPathUtil()
+                instance = UriUtil()
             }
             return instance!!
         }
+    }
+
+    fun getDownloadFilePath(imageId: Int): File {
+        val path = File("${Environment.getExternalStorageDirectory().path}/Wallhaven")
+        if (!path.exists()) {
+            path.mkdirs()
+        }
+        return File(path, "wallhaven-${imageId}.png")
+    }
+
+    fun getTempFilePath(): File {
+        val dir = File("${Environment.getExternalStorageDirectory().path}/Wallhaven/temp")
+        if (!dir.exists()) {
+            dir.mkdirs()
+        } else if (dir.listFiles().size >= 5) {
+            dir.listFiles().sortedBy { it.name }[0].delete()
+        }
+        return File(dir, "temp-${System.currentTimeMillis()}.png")
     }
 
     fun getRealFilePath(uri: Uri?): String? {

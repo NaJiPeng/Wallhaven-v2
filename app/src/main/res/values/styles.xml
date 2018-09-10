@@ -39,6 +39,7 @@
     </style>
 
     <style name="Tag" parent="AppTheme" />
+    <style name="ImageSearch" parent="AppTheme" />
 
     <style name="StartSearch" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@android:color/white</item>

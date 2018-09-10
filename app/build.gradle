@@ -15,12 +15,12 @@ android {
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "2.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -90,8 +90,14 @@ dependencies {
 
     implementation 'com.github.dongjunkun:DropDownMenu:1.0.4'
 
-    implementation 'com.zhihu.android:matisse:0.5.2-beta2'
+    implementation('com.zhihu.android:matisse:0.5.2-beta2') {
+        exclude module: 'support-v4'
+    }
 
     implementation 'id.zelory:compressor:2.1.0'
+
+    implementation 'com.github.yalantis:ucrop:2.2.2-native'
+
+    implementation 'me.grantland:autofittextview:0.2.1'
 
 }

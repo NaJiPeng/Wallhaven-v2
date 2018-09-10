@@ -18,10 +18,10 @@ class CommonDataHolder {
 
         fun getSimpleData() = simpleData!!
 
-        fun getDetailData(position: Int) = detailData?.get(position - 1)
+        fun getDetailData(position: Int) = detailData?.get(position)
 
         fun setDetailData(detailImageInfo: DetailImageInfo, position: Int) {
-            detailData?.set(position - 1, detailImageInfo)
+            detailData?.set(position, detailImageInfo)
         }
 
         fun getImage(position: Int) = simpleData?.get(position)
