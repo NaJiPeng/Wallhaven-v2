@@ -105,7 +105,7 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
         super.onOptionsItemSelected(item)
         when (item?.itemId) {
             R.id.camera -> {
-                rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                rxPermissions.request(Manifest.permission.CAMERA)
                         .subscribe { granted ->
                             if (granted) {
                                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import com.yalantis.ucrop.util.FileUtils
 import java.io.File
 
 class UriUtil private constructor() {
@@ -33,14 +34,12 @@ class UriUtil private constructor() {
         if (!path.exists()) {
             path.mkdirs()
         }
-        return File(path, "wallhaven-${imageId}.png")
+        return File(path, "wallhaven-$imageId.png")
     }
 
     fun getTempFilePath(): File {
-        val dir = File("${Environment.getExternalStorageDirectory().path}/Wallhaven/temp")
-        if (!dir.exists()) {
-            dir.mkdirs()
-        } else if (dir.listFiles().size >= 5) {
+        val dir = context.externalCacheDir
+        if (dir.listFiles().size >= 5) {
             dir.listFiles().sortedBy { it.name }[0].delete()
         }
         return File(dir, "temp-${System.currentTimeMillis()}.png")

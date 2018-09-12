@@ -66,7 +66,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
         }
 
         layoutCameraSearch.setOnClickListener { _ ->
-            rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            rxPermissions.request(Manifest.permission.CAMERA)
                     .subscribe { granted ->
                         if (granted) {
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
