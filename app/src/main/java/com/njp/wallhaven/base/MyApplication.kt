@@ -2,10 +2,7 @@ package com.njp.wallhaven.base
 
 import android.app.Application
 import com.njp.wallhaven.R
-import com.njp.wallhaven.utils.ColorUtil
-import com.njp.wallhaven.utils.SPUtil
-import com.njp.wallhaven.utils.ToastUtil
-import com.njp.wallhaven.utils.UriUtil
+import com.njp.wallhaven.utils.*
 import com.raizlabs.android.dbflow.config.FlowManager
 import com.scwang.smartrefresh.header.MaterialHeader
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -27,6 +24,8 @@ class MyApplication : Application() {
         }
         //DBFlow初始化
         FlowManager.init(this)
+
+        TencentUtil.init(this)
 
         UriUtil.init(this)
 

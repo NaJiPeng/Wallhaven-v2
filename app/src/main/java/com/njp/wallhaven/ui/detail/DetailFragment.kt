@@ -24,20 +24,20 @@ import com.njp.wallhaven.base.BaseFragment
 import com.njp.wallhaven.repositories.bean.DetailImageInfo
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 
-import com.njp.wallhaven.utils.ToastUtil
 import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.fragment_detail.*
 import java.io.File
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Handler
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import com.github.ybq.android.spinkit.SpinKitView
 import com.njp.wallhaven.repositories.network.ProgressInterceptor
 import com.njp.wallhaven.ui.tag.TagActivity
-import com.njp.wallhaven.utils.ColorUtil
-import com.njp.wallhaven.utils.CommonDataHolder
-import com.njp.wallhaven.utils.UriUtil
+import com.njp.wallhaven.utils.*
+import com.tencent.tauth.Tencent
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
 import org.greenrobot.eventbus.EventBus
@@ -64,7 +64,33 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
     private var bitmap: Bitmap? = null
     private lateinit var rxPermissions: RxPermissions
     private lateinit var loadingDialog: Dialog
+    private lateinit var shareDialog: Dialog
+    private var tempPath = ""
 
+    private val shareListener = View.OnClickListener {
+        shareDialog.dismiss()
+        loadingDialog.show()
+        Thread {
+            val tempFile = UriUtil.getInstance().getTempFilePath()
+            tempPath = tempFile.absolutePath
+            saveImageToDisk(tempFile)
+            activity?.let { act ->
+                act.runOnUiThread {
+                    loadingDialog.dismiss()
+                    when (it.id) {
+                        R.id.imageQQ -> TencentUtil.getInstance().shareImageToQQ(act, tempPath)
+                        R.id.imageQzone -> TencentUtil.getInstance().shareImageToQzone(act, tempPath)
+                        R.id.imageWechat -> bitmap?.let { bmp ->
+                            TencentUtil.getInstance().shareImageToWechat(bmp)
+                        }
+                        R.id.imageCircleOfFriends -> bitmap?.let { bmp ->
+                            TencentUtil.getInstance().shareImageToCircleOfFriend(bmp)
+                        }
+                    }
+                }
+            }
+        }.start()
+    }
 
     override fun createView(inflater: LayoutInflater, container: ViewGroup): View {
         return inflater.inflate(R.layout.fragment_detail, container, false)
@@ -78,39 +104,41 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
         photoView.maximumScale *= 2
         Glide.with(context!!).load(image.url).into(photoView)
 
+        initDialog()
+
+        initChipGroup()
+
+        initImageEvent()
+
+        photoView.setOnClickListener { activity?.finish() }
+
+        if (detailImageInfo != null) {
+            onGetDetailImageSuccess(detailImageInfo!!)
+        } else {
+            presenter.getDetailImage(image.id)
+        }
+
+        EventBus.getDefault().register(this)
+    }
+
+    private fun initDialog() {
         loadingDialog = Dialog(context, R.style.dialog)
         val dialogView = LayoutInflater.from(context)
                 .inflate(R.layout.dialog_loading, null)
         loadingDialog.setContentView(dialogView)
         loadingDialog.setCancelable(false)
 
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onSlide(p0: View, p1: Float) {
-                imageControl.setImageResource(if (p1 > 0.5f) R.drawable.ic_down else R.drawable.ic_up)
-            }
+        shareDialog = Dialog(context, R.style.dialog)
+        val shareView = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_share, null)
+        shareView.findViewById<ImageView>(R.id.imageQQ).setOnClickListener(shareListener)
+        shareView.findViewById<ImageView>(R.id.imageWechat).setOnClickListener(shareListener)
+        shareView.findViewById<ImageView>(R.id.imageQzone).setOnClickListener(shareListener)
+        shareView.findViewById<ImageView>(R.id.imageCircleOfFriends).setOnClickListener(shareListener)
+        shareDialog.setContentView(shareView)
+    }
 
-            override fun onStateChanged(p0: View, p1: Int) {
-                when (p1) {
-                    STATE_COLLAPSED -> imageControl.apply {
-                        setImageResource(R.drawable.ic_up)
-                        setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
-                        photoView.setOnClickListener { activity?.finish() }
-                    }
-                    STATE_EXPANDED -> imageControl.apply {
-                        setImageResource(R.drawable.ic_down)
-                        setOnClickListener { bottomSheetBehavior.state = STATE_COLLAPSED }
-                        photoView.setOnClickListener { bottomSheetBehavior.state = STATE_COLLAPSED }
-                    }
-                }
-            }
-
-        })
-
-        imageControl.setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
-
-        photoView.setOnClickListener { activity?.finish() }
-
+    private fun initImageEvent() {
         imageStar.apply {
             if (presenter.isStared(image)) {
                 setImageResource(R.drawable.ic_stared)
@@ -152,54 +180,47 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                     }
         }
 
-        imageShare.setOnClickListener {
-            ToastUtil.show("此功能正在开发中...")
+        imageShare.setOnClickListener { _ ->
+            shareDialog.show()
         }
 
         imageCrop.setOnClickListener { _ ->
             activity?.let {
-                rxPermissions
-                        .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .subscribe { granted ->
-                            if (granted) {
-                                loadingDialog.show()
-                                val file = UriUtil.getInstance().getTempFilePath()
-                                Thread {
-                                    saveImageToDisk(file)
-                                    it.runOnUiThread {
-                                        UCrop
-                                                .of(
-                                                        Uri.fromFile(file),
-                                                        Uri.fromFile(UriUtil.getInstance().getTempFilePath())
-                                                )
-                                                .withOptions(UCrop.Options().apply {
-                                                    setCompressionQuality(100)
+                loadingDialog.show()
+                val file = UriUtil.getInstance().getTempFilePath()
+                val tempFile = UriUtil.getInstance().getTempFilePath()
+                tempPath = tempFile.absolutePath
+                Thread {
+                    saveImageToDisk(file)
+                    it.runOnUiThread {
+                        UCrop
+                                .of(
+                                        Uri.fromFile(file),
+                                        Uri.fromFile(tempFile)
+                                )
+                                .withOptions(UCrop.Options().apply {
+                                    setCompressionQuality(100)
 
-                                                    val color = ColorUtil.getInstance().getCurrentColor()
-                                                    setStatusBarColor(color.second)
-                                                    setToolbarColor(color.second)
-                                                    setLogoColor(color.second)
-                                                    setActiveWidgetColor(color.second)
+                                    val color = ColorUtil.getInstance().getCurrentColor()
+                                    setStatusBarColor(color.second)
+                                    setToolbarColor(color.second)
+                                    setLogoColor(color.second)
+                                    setActiveWidgetColor(color.second)
 
-                                                    setAspectRatioOptions(0,
-                                                            AspectRatio("1:1", 1f, 1f),
-                                                            AspectRatio("3:4", 3f, 4f),
-                                                            AspectRatio("2:3", 2f, 3f),
-                                                            AspectRatio("10:16", 10f, 16f),
-                                                            AspectRatio("9:16", 9f, 16f),
-                                                            AspectRatio("9:18", 9f, 18f)
-                                                    )
-
-                                                    setFreeStyleCropEnabled(true)
-                                                })
-                                                .start(it)
-                                        loadingDialog.dismiss()
-                                    }
-                                }.start()
-                            }else {
-                                ToastUtil.show("未授权 T_T")
-                            }
-                        }
+                                    setAspectRatioOptions(0,
+                                            AspectRatio("1:1", 1f, 1f),
+                                            AspectRatio("3:4", 3f, 4f),
+                                            AspectRatio("2:3", 2f, 3f),
+                                            AspectRatio("10:16", 10f, 16f),
+                                            AspectRatio("9:16", 9f, 16f),
+                                            AspectRatio("9:18", 9f, 18f)
+                                    )
+                                    setFreeStyleCropEnabled(true)
+                                })
+                                .start(it)
+                        loadingDialog.dismiss()
+                    }
+                }.start()
             }
         }
 
@@ -216,14 +237,33 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
             }
 
         }
+    }
 
-        if (detailImageInfo != null) {
-            onGetDetailImageSuccess(detailImageInfo!!)
-        } else {
-            presenter.getDetailImage(image.id)
-        }
+    private fun initChipGroup() {
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(p0: View, p1: Float) {
+                imageControl.setImageResource(if (p1 > 0.5f) R.drawable.ic_down else R.drawable.ic_up)
+            }
 
-        EventBus.getDefault().register(this)
+            override fun onStateChanged(p0: View, p1: Int) {
+                when (p1) {
+                    STATE_COLLAPSED -> imageControl.apply {
+                        setImageResource(R.drawable.ic_up)
+                        setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
+                        photoView.setOnClickListener { activity?.finish() }
+                    }
+                    STATE_EXPANDED -> imageControl.apply {
+                        setImageResource(R.drawable.ic_down)
+                        setOnClickListener { bottomSheetBehavior.state = STATE_COLLAPSED }
+                        photoView.setOnClickListener { bottomSheetBehavior.state = STATE_COLLAPSED }
+                    }
+                }
+            }
+
+        })
+
+        imageControl.setOnClickListener { bottomSheetBehavior.state = STATE_EXPANDED }
     }
 
     private fun saveImageToDisk(file: File) {

@@ -39,8 +39,10 @@ class UriUtil private constructor() {
 
     fun getTempFilePath(): File {
         val dir = context.externalCacheDir
-        if (dir.listFiles().size >= 5) {
-            dir.listFiles().sortedBy { it.name }[0].delete()
+        dir.listFiles().sortedBy { it.name }.let {
+            if (it.size >= 5) {
+                it[0].delete()
+            }
         }
         return File(dir, "temp-${System.currentTimeMillis()}.png")
     }

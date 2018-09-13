@@ -15,6 +15,7 @@ import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.utils.ActivityController
 import com.njp.wallhaven.utils.CommonDataHolder
 import com.njp.wallhaven.utils.ScrollToEvent
+import com.njp.wallhaven.utils.TencentUtil
 import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.activity_detail.*
 import org.greenrobot.eventbus.EventBus
@@ -79,9 +80,11 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            UCrop.getOutput(data!!)?.let {
-                EventBus.getDefault().post(Pair(current, it))
+        if (requestCode == UCrop.REQUEST_CROP) {
+            if (resultCode == Activity.RESULT_OK) {
+                UCrop.getOutput(data!!)?.let {
+                    EventBus.getDefault().post(Pair(current, it))
+                }
             }
         }
     }

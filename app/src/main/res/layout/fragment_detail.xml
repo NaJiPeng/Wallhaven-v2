@@ -27,7 +27,7 @@
                 style="@style/SpinKitView.Large.Circle"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                app:SpinKit_Color="@color/colorAccent" />
+                app:SpinKit_Color="#ffffff" />
 
             <TextView
                 android:id="@+id/textProgress"
