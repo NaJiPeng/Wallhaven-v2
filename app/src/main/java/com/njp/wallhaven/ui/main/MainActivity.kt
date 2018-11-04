@@ -13,16 +13,13 @@ import android.view.MenuItem
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.TabAdapter
-import com.njp.wallhaven.utils.ScrollEvent
 import kotlinx.android.synthetic.main.activity_main.*
 import android.view.View
 import com.njp.wallhaven.adapter.BottomSheetAdapter
 import com.njp.wallhaven.ui.history.HistoryActivity
 import com.njp.wallhaven.ui.search.start.StartSearchActivity
 import com.njp.wallhaven.ui.stared.StaredActivity
-import com.njp.wallhaven.utils.ColorUtil
-import com.njp.wallhaven.utils.SPUtil
-import com.njp.wallhaven.utils.ScrollToEvent
+import com.njp.wallhaven.utils.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -33,6 +30,7 @@ import org.greenrobot.eventbus.ThreadMode
 class MainActivity : AppCompatActivity() {
 
     private lateinit var bottomSheetDialog: BottomSheetDialog
+    private var exitTime: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +96,12 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onBackPressed() {
-        moveTaskToBack(true)
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            exitTime = System.currentTimeMillis()
+            ToastUtil.show("再按一次退出")
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onStart() {

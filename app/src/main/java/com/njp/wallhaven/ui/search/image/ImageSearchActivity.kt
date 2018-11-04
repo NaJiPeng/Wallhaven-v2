@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -111,11 +113,13 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
                                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                                 val file = UriUtil.getInstance().getTempFilePath()
                                 cameraPath = file.absolutePath
-                                intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(
-                                        this,
-                                        "com.njp.wallhaven.fileprovider",
-                                        file
-                                ))
+                                val uri = if (Build.VERSION.SDK_INT >= 24)
+                                    FileProvider.getUriForFile(
+                                            this,
+                                            "com.njp.wallhaven.fileprovider",
+                                            file
+                                    ) else Uri.fromFile(file)
+                                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
                                 startActivityForResult(intent, CODE_TAKE_PHOTO)
                             }else {
                                 ToastUtil.show("未授权 T_T")

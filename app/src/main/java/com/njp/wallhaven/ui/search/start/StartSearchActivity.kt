@@ -3,8 +3,9 @@ package com.njp.wallhaven.ui.search.start
 import android.Manifest
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.support.design.chip.Chip
 import android.support.v4.content.FileProvider
@@ -72,13 +73,15 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             val file = UriUtil.getInstance().getTempFilePath()
                             path = file.absolutePath
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(
-                                    this,
-                                    "com.njp.wallhaven.fileprovider",
-                                    file
-                            ))
+                            val uri = if (Build.VERSION.SDK_INT >= 24)
+                                FileProvider.getUriForFile(
+                                        this,
+                                        "com.njp.wallhaven.fileprovider",
+                                        file
+                                ) else Uri.fromFile(file)
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
                             startActivityForResult(intent, CODE_TAKE_PHOTO)
-                        }else {
+                        } else {
                             ToastUtil.show("未授权 T_T")
                         }
                     }
@@ -90,7 +93,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
                     .setPositiveButton("确定") { _, _ ->
                         presenter.clearHistory()
                         chipGroupHistory.removeAllViews()
-                        layoutHistory.visibility = View.INVISIBLE
+                        layoutHistory.visibility = View.GONE
                         ToastUtil.show("已清除搜索记录")
                     }.setNegativeButton("取消") { p0, _ ->
                         p0?.dismiss()
@@ -130,7 +133,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
 
     override fun onGetStaredTags(tags: List<Tag>) {
         if (tags.isEmpty()) {
-            layoutTags.visibility = View.INVISIBLE
+            layoutTags.visibility = View.GONE
             return
         }
         layoutTags.visibility = View.VISIBLE
@@ -163,6 +166,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
             if (parentHeight > standardHeight) {
                 scrollViewTags.layoutParams.height = standardHeight
                 textExpansionTags.visibility = View.VISIBLE
+                textExpansionTags.text = "展开"
                 textExpansionTags.setOnClickListener {
                     when (textExpansionTags.text) {
                         "展开" -> {
@@ -182,7 +186,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
 
     override fun onGetSearchHistory(historyList: List<History>) {
         if (historyList.isEmpty()) {
-            layoutHistory.visibility = View.INVISIBLE
+            layoutHistory.visibility = View.GONE
             return
         }
         layoutHistory.visibility = View.VISIBLE
@@ -216,6 +220,7 @@ class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPr
             if (parentHeight > standardHeight) {
                 scrollViewHistory.layoutParams.height = standardHeight
                 textExpansionHistory.visibility = View.VISIBLE
+                textExpansionHistory.text = "展开"
                 textExpansionHistory.setOnClickListener {
                     when (textExpansionHistory.text) {
                         "展开" -> {

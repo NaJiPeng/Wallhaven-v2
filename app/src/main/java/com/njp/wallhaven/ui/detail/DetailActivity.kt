@@ -83,7 +83,7 @@ class DetailActivity : AppCompatActivity() {
         if (requestCode == UCrop.REQUEST_CROP) {
             if (resultCode == Activity.RESULT_OK) {
                 UCrop.getOutput(data!!)?.let {
-                    EventBus.getDefault().post(Pair(current, it))
+                    EventBus.getDefault().postSticky(Pair(current, it))
                 }
             }
         }
