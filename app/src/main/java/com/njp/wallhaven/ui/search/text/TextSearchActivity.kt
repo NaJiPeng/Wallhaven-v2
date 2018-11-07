@@ -10,14 +10,13 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuItem
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.ColorDropMenuAdpter
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.adapter.TextDropMenuAdapter
 import com.njp.wallhaven.base.BaseActivity
-import com.njp.wallhaven.repositories.Repository
-import com.njp.wallhaven.repositories.bean.History
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.repositories.bean.Tag
 import com.njp.wallhaven.utils.ActivityController
@@ -236,6 +235,9 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
         val searchView = MenuItemCompat.getActionView(item) as SearchView
         searchView.isSubmitButtonEnabled = true
         searchView.queryHint = "搜索(建议English)"
+        searchView.setOnSearchClickListener {
+            searchView.setQuery(toolBar.title, false)
+        }
         searchView.setOnQueryTextListener(
                 object : SearchView.OnQueryTextListener {
                     override fun onQueryTextChange(p0: String?): Boolean {
