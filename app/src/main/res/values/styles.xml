@@ -22,6 +22,7 @@
 
     <style name="Splash" parent="AppTheme">
         <item name="android:windowFullscreen">true</item>
+        <item name="android:background">@drawable/wallhaven_bg</item>
     </style>
 
     <style name="Detail" parent="Theme.MaterialComponents.Light.NoActionBar">

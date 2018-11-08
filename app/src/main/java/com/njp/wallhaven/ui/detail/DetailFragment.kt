@@ -305,6 +305,7 @@ class DetailFragment : BaseFragment<DetailContract.View, DetailPresenter>(), Det
                 .listener(object : RequestListener<Bitmap> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
                         if (userVisibleHint) ToastUtil.show("图片加载失败 >_<")
+                        Log.e("wwww", "onLoadFailed", e)
                         loadingLayout?.visibility = View.INVISIBLE
                         return false
                     }

@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuItem
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
 import com.njp.wallhaven.adapter.ColorDropMenuAdpter
@@ -23,12 +22,11 @@ import com.njp.wallhaven.utils.ActivityController
 import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
-import com.raizlabs.android.dbflow.kotlinextensions.save
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.scwang.smartrefresh.layout.constant.RefreshState
 import com.scwang.smartrefresh.layout.footer.BallPulseFooter
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
-import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.activity_text_search.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -81,7 +79,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
         setDropDownMenu()
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        recyclerView.itemAnimator = FlipInTopXAnimator()
+        recyclerView.itemAnimator = SlideInUpAnimator()
         recyclerView.adapter = SlideInBottomAnimationAdapter(adapter)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

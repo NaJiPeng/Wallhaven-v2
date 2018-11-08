@@ -2,7 +2,6 @@ package com.njp.wallhaven.ui.main
 
 import android.animation.AnimatorInflater
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog

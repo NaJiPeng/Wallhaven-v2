@@ -9,7 +9,6 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.support.v7.widget.GridLayoutManager
@@ -27,12 +26,11 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
-import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.activity_image_search.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import java.io.File
 
 
 class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPresenter>(), ImageSearchContract.View {
@@ -67,7 +65,7 @@ class ImageSearchActivity : BaseActivity<ImageSearchContract.View, ImageSearchPr
         title = "以图搜图"
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        recyclerView.itemAnimator = FlipInTopXAnimator()
+        recyclerView.itemAnimator = SlideInUpAnimator()
         recyclerView.adapter = SlideInBottomAnimationAdapter(adapter)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

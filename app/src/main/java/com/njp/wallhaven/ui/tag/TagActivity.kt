@@ -20,7 +20,7 @@ import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
-import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.activity_tag.*
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -92,7 +92,7 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
         }
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        recyclerView.itemAnimator = FlipInTopXAnimator()
+        recyclerView.itemAnimator = SlideInUpAnimator()
         recyclerView.adapter = SlideInBottomAnimationAdapter(adapter)
 
         refreshLayout.setOnRefreshListener { presenter.getTagImageInfo(tag.id) }

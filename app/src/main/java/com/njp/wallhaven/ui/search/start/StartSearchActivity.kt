@@ -27,7 +27,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import kotlinx.android.synthetic.main.activity_start_search.*
-import java.io.File
 
 class StartSearchActivity : BaseActivity<StartSearchContract.View, StartSearchPresenter>(), StartSearchContract.View {
 

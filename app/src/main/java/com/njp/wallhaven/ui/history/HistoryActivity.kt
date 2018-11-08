@@ -20,7 +20,7 @@ import com.njp.wallhaven.utils.ColorUtil
 import com.njp.wallhaven.utils.ScrollToEvent
 import com.njp.wallhaven.utils.ToastUtil
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter
-import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.activity_history.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -42,7 +42,7 @@ class HistoryActivity : HistoryContract.View, BaseActivity<HistoryContract.View,
         toolBar.setNavigationOnClickListener { onBackPressed() }
 
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        recyclerView.itemAnimator = FlipInTopXAnimator()
+        recyclerView.itemAnimator = SlideInUpAnimator()
         recyclerView.adapter = SlideInBottomAnimationAdapter(adapter)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

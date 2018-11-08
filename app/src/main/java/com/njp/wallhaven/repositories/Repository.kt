@@ -44,7 +44,7 @@ class Repository private constructor() {
                     val elements = doc.select("#featured a")
                     return@map elements.map { element ->
                         val id = element.attr("href").split("/").last().toInt()
-                        val url = "http:" + element.child(0).attr("src")
+                        val url = "https:" + element.child(0).attr("src")
                         SimpleImageInfo().apply {
                             this.id = id
                             this.url = url
@@ -80,7 +80,7 @@ class Repository private constructor() {
         return service.getDetailImage(id)
                 .map {
                     val doc = Jsoup.parse(it.string())
-                    val url = "http:" + doc.select("#wallpaper").last().attr("src")
+                    val url = "https:" + doc.select("#wallpaper").last().attr("src")
                     val resolution = doc.select(".showcase-resolution")[0].text()
                     val tags = doc.select("#tags")[0].children().map { element ->
                         val id = element.attr("data-tag-id").toInt()
@@ -232,7 +232,7 @@ class Repository private constructor() {
                 .map {
                     val doc = Jsoup.parse(it.string())
                     val titleImage = doc.select("#tag-header-wrapper")[0]
-                    val titleImageUrl = "http:" + titleImage.attr("style")
+                    val titleImageUrl = "https:" + titleImage.attr("style")
                             .split("(", ")")[1]
                     val imageId = titleImage.select("a")[0].attr("href")
                             .split("/").last().toInt()
