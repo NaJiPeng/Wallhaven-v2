@@ -50,6 +50,7 @@ object NetworkInstance {
                 @Query("colors") colors: String,
                 @Query("sorting") sorting: String,
                 @Query("topRange") topRange: String,
+                @Query("categories") categories: String,
                 @Query("page") page: Int
 
         ): Observable<ResponseBody>

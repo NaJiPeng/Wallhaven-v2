@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import com.jaeger.library.StatusBarUtil
 import com.njp.wallhaven.R
+import com.njp.wallhaven.adapter.CategoriesAdapter
 import com.njp.wallhaven.adapter.ColorDropMenuAdpter
 import com.njp.wallhaven.adapter.ImagesAdapter
 import com.njp.wallhaven.adapter.TextDropMenuAdapter
@@ -57,6 +58,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
     private var colors = ""
     private var sorting = ""
     private var topRange = ""
+    private var categories = "111"
     private val adapter = ImagesAdapter()
 
     private lateinit var recyclerView: RecyclerView
@@ -97,9 +99,9 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
 
         refreshLayout.setOnRefreshListener {
             adapter.clear()
-            presenter.refreshImages(q, ratios, colors, sorting, topRange)
+            presenter.refreshImages(q, ratios, colors, sorting, topRange, categories)
         }
-        refreshLayout.setOnLoadMoreListener { presenter.loadMoreImages(q, ratios, colors, sorting, topRange) }
+        refreshLayout.setOnLoadMoreListener { presenter.loadMoreImages(q, ratios, colors, sorting, topRange, categories) }
 
         onChangeColor(ColorUtil.getInstance().getCurrentColor())
 
@@ -114,7 +116,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
         refreshLayout = contentView.findViewById(R.id.refreshLayout)
         footer = contentView.findViewById(R.id.footer)
 
-        val tabs = listOf("宽高比例", "颜色", "相关度", "热门时间")
+        val tabs = listOf("比例", "种类", "排序", "时间", "颜色")
 
         val recyclerViewRatio = LayoutInflater.from(this)
                 .inflate(R.layout.drop_down_menu, dropDownMenu, false) as RecyclerView
@@ -125,13 +127,12 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                 ColorUtil.getInstance().getCurrentColor().second
         ) { position ->
             val ratio = ratiosList[position]
-            dropDownMenu.setTabText(if (position == 0) tabs[0] else ratio)
             if (ratios != ratio) {
                 ratios = ratio
                 if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
                     presenter.disposeAll()
                     adapter.clear()
-                    presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                    presenter.refreshImages(q, ratios, colors, sorting, topRange, categories)
                 } else {
                     refreshLayout.autoRefresh()
                 }
@@ -153,14 +154,13 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                 colorList,
                 ColorUtil.getInstance().getCurrentColor().second
         ) { position ->
-            dropDownMenu.setTabText(if (position == 0) tabs[1] else colorList[position])
             val color = if (position == 0) "" else colorList[position]
             if (colors != color) {
                 colors = color
                 if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
                     presenter.disposeAll()
                     adapter.clear()
-                    presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                    presenter.refreshImages(q, ratios, colors, sorting, topRange, categories)
                 } else {
                     refreshLayout.autoRefresh()
                 }
@@ -178,15 +178,13 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                 sortingTitles,
                 ColorUtil.getInstance().getCurrentColor().second
         ) { position ->
-            val sortTitle = sortingTitles[position]
             val sort = sortingList[position]
-            dropDownMenu.setTabText(sortTitle)
             if (sorting != sort) {
                 sorting = sort
                 if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
                     presenter.disposeAll()
                     adapter.clear()
-                    presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                    presenter.refreshImages(q, ratios, colors, sorting, topRange, categories)
                 } else {
                     refreshLayout.autoRefresh()
                 }
@@ -211,7 +209,7 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
                     if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
                         presenter.disposeAll()
                         adapter.clear()
-                        presenter.refreshImages(q, ratios, colors, sorting, topRange)
+                        presenter.refreshImages(q, ratios, colors, sorting, topRange, categories)
                     } else {
                         refreshLayout.autoRefresh()
                     }
@@ -220,9 +218,28 @@ class TextSearchActivity : BaseActivity<TextSearchContract.View, TextSearchPrese
             dropDownMenu.closeMenu()
         }
 
+        val recyclerViewCategories = LayoutInflater.from(this)
+                .inflate(R.layout.drop_down_menu, dropDownMenu, false) as RecyclerView
+        recyclerViewCategories.layoutManager = GridLayoutManager(this, 5)
+        recyclerViewCategories.adapter = CategoriesAdapter(
+                listOf("普通", "动漫", "人物"), ColorUtil.getInstance().getCurrentColor().second
+        ) {
+            if (categories != it) {
+                categories = it
+                if (refreshLayout.state == RefreshState.Refreshing || refreshLayout.state == RefreshState.RefreshFinish) {
+                    presenter.disposeAll()
+                    adapter.clear()
+                    presenter.refreshImages(q, ratios, colors, sorting, topRange, categories)
+                } else {
+                    refreshLayout.autoRefresh()
+                }
+            }
+            dropDownMenu.closeMenu()
+        }
+
         dropDownMenu.setDropDownMenu(
                 tabs,
-                listOf(recyclerViewRatio, recyclerViewColors, recyclerViewSorting, recyclerViewRange),
+                listOf(recyclerViewRatio, recyclerViewCategories, recyclerViewSorting, recyclerViewRange, recyclerViewColors),
                 contentView
         )
     }

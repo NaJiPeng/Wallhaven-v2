@@ -10,9 +10,9 @@ class TextSearchPresenter(view: TextSearchContract.View) : BasePresenter<TextSea
 
     private var page = 1
 
-    override fun refreshImages(q: String, ratios: String, colors: String, sorting: String, topRange: String) {
+    override fun refreshImages(q: String, ratios: String, colors: String, sorting: String, topRange: String, categories: String) {
         page = 1
-        Repository.getInstance().searchByText(q, ratios, colors, sorting, topRange, page)
+        Repository.getInstance().searchByText(q, ratios, colors, sorting, topRange, categories, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -21,8 +21,8 @@ class TextSearchPresenter(view: TextSearchContract.View) : BasePresenter<TextSea
                 )?.let { addDisposable(it) }
     }
 
-    override fun loadMoreImages(q: String, ratios: String, colors: String, sorting: String, topRange: String) {
-        Repository.getInstance().searchByText(q, ratios, colors, sorting, topRange, ++page)
+    override fun loadMoreImages(q: String, ratios: String, colors: String, sorting: String, topRange: String, categories: String) {
+        Repository.getInstance().searchByText(q, ratios, colors, sorting, topRange, categories, ++page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

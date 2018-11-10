@@ -14,8 +14,8 @@ interface TextSearchContract {
     }
 
     interface Presenter {
-        fun refreshImages(q: String, ratios: String, colors: String, sorting: String, topRange: String)
-        fun loadMoreImages(q: String, ratios: String, colors: String, sorting: String, topRange: String)
+        fun refreshImages(q: String, ratios: String, colors: String, sorting: String, topRange: String, categories: String)
+        fun loadMoreImages(q: String, ratios: String, colors: String, sorting: String, topRange: String, categories: String)
         fun saveHistory(string: String)
     }
 

@@ -290,9 +290,10 @@ class Repository private constructor() {
             colors: String,
             sorting: String,
             topRange: String,
+            categories: String,
             page: Int
     ): Observable<List<SimpleImageInfo>> {
-        return service.searchByText(q, ratios, colors, sorting, topRange, page).map {
+        return service.searchByText(q, ratios, colors, sorting, topRange, categories, page).map {
             val doc = Jsoup.parse(it.string())
             val images = doc.select("#thumbs figure:not(.thumb-nsfw)")
                     .map { element ->
