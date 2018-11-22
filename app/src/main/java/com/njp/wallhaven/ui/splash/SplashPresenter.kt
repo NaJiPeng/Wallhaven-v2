@@ -12,12 +12,13 @@ import java.util.concurrent.TimeUnit
 
 class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.View>(view), SplashContract.Presenter {
 
-    override fun getSplashImage() {
+    override fun getSplashImages() {
         val images = Repository.getInstance().getSplashImagesFromDB()
         if (images.isNotEmpty()) {
-            view?.onSplashImage(images[Random().nextInt(images.size)])
+            images.shuffle()
+            view?.onSplashImages(images)
         }else{
-            view?.onSplashImage(null)
+            view?.onNoSplashImage()
         }
     }
 

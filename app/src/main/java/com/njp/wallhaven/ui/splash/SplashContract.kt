@@ -5,8 +5,10 @@ import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 interface SplashContract {
 
     interface View {
-        //获取一张闪屏图
-        fun onSplashImage(imageInfo: SimpleImageInfo?)
+        //获取闪屏图
+        fun onSplashImages(images: MutableList<SimpleImageInfo>)
+        //没有闪屏图
+        fun onNoSplashImage()
         //计时器
         fun onTimer()
 
@@ -14,7 +16,7 @@ interface SplashContract {
 
     interface Presenter {
         //抽取闪屏图
-        fun getSplashImage()
+        fun getSplashImages()
         //更新本地图库
         fun updateSplashImages()
         //启动定时器

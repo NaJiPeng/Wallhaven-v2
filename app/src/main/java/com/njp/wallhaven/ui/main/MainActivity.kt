@@ -5,6 +5,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
+import android.support.design.widget.TabLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
@@ -43,6 +44,18 @@ class MainActivity : AppCompatActivity() {
         )
         viewPager.offscreenPageLimit = 3
         tabLayout.setupWithViewPager(viewPager)
+        tabLayout.addOnTabSelectedListener(object : TabLayout.BaseOnTabSelectedListener<TabLayout.Tab> {
+            override fun onTabReselected(p0: TabLayout.Tab?) {
+                EventBus.getDefault().post(ScrollToEvent(0, false))
+            }
+
+            override fun onTabUnselected(p0: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(p0: TabLayout.Tab?) {
+            }
+
+        })
 
         val animator = AnimatorInflater.loadAnimator(this, R.animator.animator_fab)
         animator.setTarget(fab)

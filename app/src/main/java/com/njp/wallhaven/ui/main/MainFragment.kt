@@ -113,6 +113,7 @@ class MainFragment : BaseFragment<MainContract.View, MainPresenter>(), MainContr
                     it.smoothScrollToPosition(event.position)
                 } else {
                     it.scrollToPosition(event.position)
+                    refreshLayout.autoRefresh()
                 }
             }
 
