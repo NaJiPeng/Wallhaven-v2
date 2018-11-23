@@ -14,8 +14,8 @@ android {
         applicationId "com.njp.wallhaven"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 181110
-        versionName "2.7.0"
+        versionCode 181123
+        versionName "2.8.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

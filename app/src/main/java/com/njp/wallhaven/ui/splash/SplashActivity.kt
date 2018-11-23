@@ -2,9 +2,7 @@ package com.njp.wallhaven.ui.splash
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.FragmentManager
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.njp.wallhaven.R
 import com.njp.wallhaven.base.BaseActivity
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
@@ -18,7 +16,7 @@ import java.util.*
  */
 class SplashActivity : BaseActivity<SplashContract.View, SplashPresenter>(), SplashContract.View {
 
-    private var seconds = 30000
+    private var seconds = 3
     private val fragments = ArrayList<GalleryFragment>(7)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +42,9 @@ class SplashActivity : BaseActivity<SplashContract.View, SplashPresenter>(), Spl
         fragments.add(GalleryFragment2())
         fragments.add(GalleryFragment3())
         fragments.add(GalleryFragment4())
+        fragments.add(GalleryFragment5())
+        fragments.add(GalleryFragment6())
+        fragments.add(GalleryFragment7())
     }
 
     override fun onBackPressed() {
