@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.njp.wallhaven">
+    package="com.njp.wallhaven3">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name=".base.MyApplication"
+        android:name="com.njp.wallhaven3.base.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -23,7 +23,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.njp.wallhaven.fileprovider"
+            android:authorities="com.njp.wallhaven3.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -57,7 +57,7 @@
         </activity>
 
         <activity
-            android:name=".ui.splash.SplashActivity"
+            android:name="com.njp.wallhaven3.ui.splash.SplashActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Splash">
@@ -68,38 +68,38 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name="com.njp.wallhaven3.ui.main.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.detail.DetailActivity"
+            android:name="com.njp.wallhaven3.ui.detail.DetailActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Detail" />
         <activity
-            android:name=".ui.stared.StaredActivity"
+            android:name="com.njp.wallhaven3.ui.stared.StaredActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.history.HistoryActivity"
+            android:name="com.njp.wallhaven3.ui.history.HistoryActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.tag.TagActivity"
+            android:name="com.njp.wallhaven3.ui.tag.TagActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Tag" />
         <activity
-            android:name=".ui.search.text.TextSearchActivity"
+            android:name="com.njp.wallhaven3.ui.search.text.TextSearchActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.search.start.StartSearchActivity"
+            android:name="com.njp.wallhaven3.ui.search.start.StartSearchActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/StartSearch" />
         <activity
-            android:name=".ui.search.image.ImageSearchActivity"
+            android:name="com.njp.wallhaven3.ui.search.image.ImageSearchActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/ImageSearch" />

@@ -11,11 +11,11 @@ def dbflow_version = "4.2.4"
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.njp.wallhaven"
+        applicationId "com.njp.wallhaven3"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 181123
-        versionName "2.8.0"
+        versionCode 190606
+        versionName "3.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
