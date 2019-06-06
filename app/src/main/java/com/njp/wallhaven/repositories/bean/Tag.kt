@@ -10,7 +10,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel
 @Table(database = AppDatabase::class)
 data class Tag(
         @PrimaryKey
-        var id: Int = 0,
+        var id: String = "",
         @Column
         var name: String = ""
 ) : BaseModel()

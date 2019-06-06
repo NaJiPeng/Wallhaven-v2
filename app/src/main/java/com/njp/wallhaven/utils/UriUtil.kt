@@ -29,7 +29,7 @@ class UriUtil private constructor() {
         }
     }
 
-    fun getDownloadFilePath(imageId: Int): File {
+    fun getDownloadFilePath(imageId: String): File {
         val path = File("${Environment.getExternalStorageDirectory().path}/Wallhaven")
         if (!path.exists()) {
             path.mkdirs()

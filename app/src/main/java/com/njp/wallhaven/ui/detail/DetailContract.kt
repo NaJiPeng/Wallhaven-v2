@@ -11,7 +11,7 @@ interface DetailContract {
     }
 
     interface Presenter {
-        fun getDetailImage(id: Int)
+        fun getDetailImage(id: String)
         fun starImage(image: SimpleImageInfo)
         fun unStarImage(image: SimpleImageInfo)
         fun isStared(image: SimpleImageInfo): Boolean

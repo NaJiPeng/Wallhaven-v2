@@ -1,5 +1,15 @@
 package com.njp.wallhaven.repositories
 
+import android.graphics.drawable.Drawable
+import android.util.Log
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
+import com.njp.wallhaven.base.MyApplication
 import com.njp.wallhaven.repositories.bean.*
 import com.njp.wallhaven.repositories.network.NetworkInstance
 import com.njp.wallhaven.repositories.network.NetworkInstance.retrofit
@@ -13,6 +23,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.jsoup.Jsoup
 import java.io.File
+import java.util.concurrent.Callable
 
 /**
  * 应用数据交互唯一接口
@@ -39,18 +50,23 @@ class Repository private constructor() {
      */
     fun getSplashImages(): Observable<List<SimpleImageInfo>> {
         return service.getImages("", 0)
-                .map { it ->
+                .map {
                     val doc = Jsoup.parse(it.string())
-                    val elements = doc.select("#featured a")
+                    val elements = doc.select(".lg-thumb a")
                     return@map elements.map { element ->
-                        val id = element.attr("href").split("/").last().toInt()
-                        val url = "https:" + element.child(0).attr("src")
-                        SimpleImageInfo().apply {
-                            this.id = id
-                            this.url = url
+                        element.attr("href").split("/").last()
+                    }
+                }.flatMap {
+                    Observable.create<String> { emitter ->
+                        it.forEach {
+                            emitter.onNext(it)
                         }
                     }
-                }
+                }.flatMap { id ->
+                    return@flatMap getDetailImage(id).map {
+                        SimpleImageInfo(id, it.url)
+                    }
+                }.buffer(4)
     }
 
     /**
@@ -63,7 +79,7 @@ class Repository private constructor() {
                     val elements = doc.select("#thumbs figure:not(.thumb-nsfw)")
                     val images = elements.map { element ->
                         val url = element.getElementsByTag("img")[0].attr("data-src")
-                        val id = element.attr("data-wallpaper-id").toInt()
+                        val id = element.attr("data-wallpaper-id")
                         SimpleImageInfo().apply {
                             this.url = url
                             this.id = id
@@ -76,14 +92,14 @@ class Repository private constructor() {
     /**
      * 从网络上获取详情大图
      */
-    fun getDetailImage(id: Int): Observable<DetailImageInfo> {
+    fun getDetailImage(id: String): Observable<DetailImageInfo> {
         return service.getDetailImage(id)
                 .map {
                     val doc = Jsoup.parse(it.string())
-                    val url = "https:" + doc.select("#wallpaper").last().attr("src")
+                    val url = doc.select("#wallpaper").last().attr("src")
                     val resolution = doc.select(".showcase-resolution")[0].text()
                     val tags = doc.select("#tags")[0].children().map { element ->
-                        val id = element.attr("data-tag-id").toInt()
+                        val id = element.attr("data-tag-id")
                         val name = element.child(0).text()
                         return@map Tag(id, name)
                     }
@@ -227,29 +243,23 @@ class Repository private constructor() {
     /**
      * 从网络上获取tag相关图片信息
      */
-    fun getTagImageInfo(tagId: Int): Observable<TagImageInfo> {
+    fun getTagImageInfo(tagId: String): Observable<TagImageInfo> {
         return service.getTagImageInfo(tagId)
                 .map {
                     val doc = Jsoup.parse(it.string())
                     val titleImage = doc.select("#tag-header-wrapper")[0]
-                    val titleImageUrl = "https:" + titleImage.attr("style")
+                    val titleImageUrl = titleImage.attr("style")
                             .split("(", ")")[1]
-                    val imageId = titleImage.select("a")[0].attr("href")
-                            .split("/").last().toInt()
-                    val imageUrl = "https://alpha.wallhaven.cc/wallpapers/thumb/small/th-$imageId.jpg"
                     val images = doc.select("#tag-thumbs figure:not(.thumb-nsfw)")
                             .map { element ->
-                                val id = element.attr("data-wallpaper-id").toInt()
+                                val id = element.attr("data-wallpaper-id")
                                 val url = element.select("img")[0].attr("data-src")
                                 return@map SimpleImageInfo().apply {
                                     this.id = id
                                     this.url = url
                                 }
                             }
-                    val imageList = ArrayList<SimpleImageInfo>()
-                    imageList.add(SimpleImageInfo(imageId, imageUrl))
-                    imageList.addAll(images)
-                    return@map TagImageInfo(titleImageUrl, imageList)
+                    return@map TagImageInfo(titleImageUrl, images)
                 }
     }
 
@@ -297,7 +307,7 @@ class Repository private constructor() {
             val doc = Jsoup.parse(it.string())
             val images = doc.select("#thumbs figure:not(.thumb-nsfw)")
                     .map { element ->
-                        val id = element.attr("data-wallpaper-id").toInt()
+                        val id = element.attr("data-wallpaper-id")
                         val url = element.select("img")[0].attr("data-src")
                         return@map SimpleImageInfo().apply {
                             this.id = id
@@ -346,13 +356,14 @@ class Repository private constructor() {
      * 以图搜图
      */
     fun searchByImage(image: File): Observable<List<SimpleImageInfo>> {
+        Log.i("wwww", "${image.name}")
         val body = RequestBody.create(MediaType.parse("multipart/form-data"), image)
         val part = MultipartBody.Part.createFormData("search_image", image.name, body)
         return service.searchByImage(part).map {
             val doc = Jsoup.parse(it.string())
             val images = doc.select("#thumbs figure:not(.thumb-nsfw)")
                     .map { element ->
-                        val id = element.attr("data-wallpaper-id").toInt()
+                        val id = element.attr("data-wallpaper-id")
                         val url = element.select("img")[0].attr("data-src")
                         return@map SimpleImageInfo().apply {
                             this.id = id

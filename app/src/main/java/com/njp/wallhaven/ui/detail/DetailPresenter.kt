@@ -8,7 +8,7 @@ import io.reactivex.schedulers.Schedulers
 
 class DetailPresenter(view: DetailContract.View) : BasePresenter<DetailContract.View>(view), DetailContract.Presenter {
 
-    override fun getDetailImage(id: Int) {
+    override fun getDetailImage(id: String) {
         Repository.getInstance().getDetailImage(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

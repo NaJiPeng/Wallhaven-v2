@@ -10,8 +10,14 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout
 
 class MyApplication : Application() {
 
+    companion object {
+        lateinit var application: MyApplication
+    }
+
     override fun onCreate() {
         super.onCreate()
+        application = this
+
         //ToastUtil初始化
         ToastUtil.init(this)
         //SPUtil初始化

@@ -11,7 +11,7 @@ interface TagContract {
     }
 
     interface Presenter {
-        fun getTagImageInfo(tagId: Int)
+        fun getTagImageInfo(tagId: String)
         fun starTag(tag: Tag)
         fun unStarTag(tag: Tag)
         fun isTagStared(tag: Tag): Boolean

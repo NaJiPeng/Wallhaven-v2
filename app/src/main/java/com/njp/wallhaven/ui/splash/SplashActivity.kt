@@ -2,12 +2,15 @@ package com.njp.wallhaven.ui.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.njp.wallhaven.R
 import com.njp.wallhaven.base.BaseActivity
 import com.njp.wallhaven.repositories.bean.SimpleImageInfo
 import com.njp.wallhaven.ui.main.MainActivity
-import com.njp.wallhaven.ui.splash.gallerys.*
 import kotlinx.android.synthetic.main.activity_splash.*
 import java.util.*
 
@@ -16,8 +19,8 @@ import java.util.*
  */
 class SplashActivity : BaseActivity<SplashContract.View, SplashPresenter>(), SplashContract.View {
 
-    private var seconds = 3
-    private val fragments = ArrayList<GalleryFragment>(7)
+    private var seconds = 5
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,25 +29,14 @@ class SplashActivity : BaseActivity<SplashContract.View, SplashPresenter>(), Spl
 
         btnSkip.setOnClickListener { toMainActivity() }
 
-        val into = Glide.with(this)
+        Glide.with(this)
                 .load(R.drawable.logo)
                 .into(ivLogo)
 
-        initFragments()
 
         presenter.getSplashImages()
         presenter.updateSplashImages()
         presenter.startTimer()
-    }
-
-    private fun initFragments() {
-        fragments.add(GalleryFragment1())
-        fragments.add(GalleryFragment2())
-        fragments.add(GalleryFragment3())
-        fragments.add(GalleryFragment4())
-        fragments.add(GalleryFragment5())
-        fragments.add(GalleryFragment6())
-        fragments.add(GalleryFragment7())
     }
 
     override fun onBackPressed() {
@@ -52,12 +44,16 @@ class SplashActivity : BaseActivity<SplashContract.View, SplashPresenter>(), Spl
     }
 
 
-    override fun onSplashImages(images: MutableList<SimpleImageInfo>) {
-        val fragment = fragments[Random().nextInt(fragments.size)].apply { setImages(images) }
-        supportFragmentManager.beginTransaction()
-                .add(R.id.layout_gallery,fragment)
-                .show(fragment)
-                .commit()
+    override fun onSplashImages(image: SimpleImageInfo) {
+        Glide.with(this)
+                .load(image.url)
+                .apply(RequestOptions().apply {
+                    override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    diskCacheStrategy(DiskCacheStrategy.DATA)
+                    placeholder(R.drawable.splash_backgroung)
+                })
+                .into(ivBackground)
+
     }
 
     override fun onNoSplashImage() {

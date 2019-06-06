@@ -8,7 +8,7 @@ import io.reactivex.schedulers.Schedulers
 
 class TagPresenter(view: TagContract.View) : BasePresenter<TagContract.View>(view), TagContract.Presenter {
 
-    override fun getTagImageInfo(tagId: Int) {
+    override fun getTagImageInfo(tagId: String) {
         Repository.getInstance().getTagImageInfo(tagId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

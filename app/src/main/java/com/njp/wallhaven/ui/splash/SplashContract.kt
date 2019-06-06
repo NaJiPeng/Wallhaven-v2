@@ -6,7 +6,7 @@ interface SplashContract {
 
     interface View {
         //获取闪屏图
-        fun onSplashImages(images: MutableList<SimpleImageInfo>)
+        fun onSplashImages(image: SimpleImageInfo)
         //没有闪屏图
         fun onNoSplashImage()
         //计时器

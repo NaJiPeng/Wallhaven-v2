@@ -17,7 +17,7 @@ object NetworkInstance {
 
     val retrofit: Retrofit = Retrofit.Builder()
             .client(client)
-            .baseUrl("https://alpha.wallhaven.cc/")
+            .baseUrl("https://wallhaven.cc/")
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -33,14 +33,14 @@ object NetworkInstance {
                 @Query("page") page: Int
         ): Observable<ResponseBody>
 
-        @GET("wallpaper/{id}")
+        @GET("w/{id}")
         fun getDetailImage(
-                @Path("id") id: Int
+                @Path("id") id: String
         ): Observable<ResponseBody>
 
         @GET("tag/{id}")
         fun getTagImageInfo(
-                @Path("id") id: Int
+                @Path("id") id: String
         ): Observable<ResponseBody>
 
         @GET("search")
@@ -56,7 +56,7 @@ object NetworkInstance {
         ): Observable<ResponseBody>
 
         @Multipart
-        @POST("search")
+        @GET("search")
         fun searchByImage(
                 @Part image: MultipartBody.Part
         ): Observable<ResponseBody>

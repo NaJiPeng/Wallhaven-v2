@@ -49,7 +49,7 @@ class TagActivity : BaseActivity<TagContract.View, TagPresenter>(), TagContract.
         setP(TagPresenter((this)))
 
         tag = Tag(
-                intent.getIntExtra("tagId", 0),
+                intent.getStringExtra("tagId"),
                 intent.getStringExtra("tagName")
         )
 

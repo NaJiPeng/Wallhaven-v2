@@ -12,7 +12,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel
  */
 @Table(database = AppDatabase::class)
 data class SimpleImageInfo(
-        @PrimaryKey var id: Int = 0,
+        @PrimaryKey var id: String = "",
         @Column var url: String = "",
         @Column var isSPlash: Boolean = false,
         @Column var isHistory: Boolean = false,
