@@ -26,7 +26,7 @@ class SplashPresenter(view: SplashContract.View) : BasePresenter<SplashContract.
                         .apply(RequestOptions().apply {
                             diskCacheStrategy(DiskCacheStrategy.DATA)
                         })
-                        .preload(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                        .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
             }
         } else {
             view?.onNoSplashImage()
