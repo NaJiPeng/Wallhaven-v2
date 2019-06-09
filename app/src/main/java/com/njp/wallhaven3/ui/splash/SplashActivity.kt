@@ -3,6 +3,7 @@ package com.njp.wallhaven3.ui.splash
 import android.content.Intent
 import android.os.Bundle
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
@@ -29,6 +30,7 @@ class SplashActivity : BaseActivity<SplashContract.View, SplashPresenter>(), Spl
 
         Glide.with(this)
                 .load(R.drawable.logo)
+                .apply(RequestOptions().priority(Priority.HIGH))
                 .into(ivLogo)
 
 
